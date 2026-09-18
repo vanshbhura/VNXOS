@@ -17,11 +17,17 @@ interface LauncherApp {
 const launcherApps: LauncherApp[] = [
   { id: 'projects', label: 'Projects', icon: 'FolderOpen', iconColor: '#f59e0b', appId: 'projects' },
   { id: 'about', label: 'About Me', icon: 'User', iconColor: '#60a5fa', appId: 'about' },
-  { id: 'terminal', label: 'Terminal', icon: 'Terminal', iconColor: '#4ade80', appId: 'terminal' },
-  { id: 'resume', label: 'Resume', icon: 'FileText', iconColor: '#f87171', appId: 'resume' },
+  { id: 'experience', label: 'Experience', icon: 'Briefcase', iconColor: '#8b5cf6', appId: 'experience' },
   { id: 'certificates', label: 'Certificates', icon: 'Award', iconColor: '#34d399', appId: 'certificates' },
-  { id: 'github', label: 'GitHub', icon: 'Github', iconColor: '#cbd5e1', href: 'https://github.com' },
-  { id: 'linkedin', label: 'LinkedIn', icon: 'Linkedin', iconColor: '#38bdf8', href: 'https://linkedin.com' },
+  { id: 'certifications', label: 'Certifications', icon: 'ShieldCheck', iconColor: '#22d3ee', appId: 'certifications' },
+  { id: 'resume', label: 'Resume', icon: 'FileText', iconColor: '#f87171', appId: 'resume' },
+  { id: 'notes', label: 'Notes', icon: 'StickyNote', iconColor: '#facc15', appId: 'notes' },
+  { id: 'resources', label: 'Resources', icon: 'Library', iconColor: '#ec4899', appId: 'resources' },
+  { id: 'ai-tools', label: 'AI Tools', icon: 'Bot', iconColor: '#818cf8', appId: 'ai-tools' },
+  { id: 'github', label: 'GitHub', icon: 'Code', iconColor: '#cbd5e1', appId: 'github' },
+  { id: 'linkedin', label: 'LinkedIn', icon: 'User', iconColor: '#38bdf8', appId: 'linkedin' },
+  { id: 'file-manager', label: 'Files', icon: 'Folder', iconColor: '#60a5fa', appId: 'file-manager' },
+  { id: 'terminal', label: 'Terminal', icon: 'Terminal', iconColor: '#4ade80', appId: 'terminal' },
   { id: 'settings', label: 'Settings', icon: 'Settings', iconColor: '#94a3b8', appId: 'settings' },
 ];
 

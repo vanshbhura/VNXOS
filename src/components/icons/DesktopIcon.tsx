@@ -26,6 +26,30 @@ export default function DesktopIcon({ icon }: DesktopIconProps) {
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
 
+    const appMap: Record<string, string> = {
+      'Projects': 'projects',
+      'About Me': 'about',
+      'About': 'about',
+      'Experience': 'experience',
+      'Certificates': 'certificates',
+      'Certification': 'certifications',
+      'GitHub': 'github',
+      'LinkedIn': 'linkedin',
+      'Resources': 'resources',
+      'AI Tools': 'ai-tools',
+      'Notes.txt': 'notes',
+      'Trash': 'trash'
+    };
+
+    const targetAppId = appMap[icon.name];
+    if (targetAppId) {
+      const app = getApp(targetAppId);
+      if (app) {
+        openWindow(app);
+        return;
+      }
+    }
+
     if (icon.type === 'folder' || icon.targetPath) {
       const app = getApp('file-manager');
       if (app) {

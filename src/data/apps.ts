@@ -83,6 +83,46 @@ export const appRegistry: AppDefinition[] = [
     defaultSize: { width: 640, height: 420 },
     minSize: { width: 400, height: 300 },
   },
+  {
+    id: 'certifications',
+    name: 'Certifications',
+    icon: 'ShieldCheck',
+    description: 'Verified skill badges',
+    defaultSize: { width: 800, height: 560 },
+    minSize: { width: 560, height: 380 },
+  },
+  {
+    id: 'resources',
+    name: 'Resources',
+    icon: 'Library',
+    description: 'Developer resources',
+    defaultSize: { width: 800, height: 600 },
+    minSize: { width: 600, height: 400 },
+  },
+  {
+    id: 'ai-tools',
+    name: 'AI Tools',
+    icon: 'Bot',
+    description: 'AI Tools showcase',
+    defaultSize: { width: 800, height: 600 },
+    minSize: { width: 600, height: 400 },
+  },
+  {
+    id: 'github',
+    name: 'GitHub',
+    icon: 'Github',
+    description: 'GitHub Profile',
+    defaultSize: { width: 900, height: 640 },
+    minSize: { width: 700, height: 500 },
+  },
+  {
+    id: 'linkedin',
+    name: 'LinkedIn',
+    icon: 'Linkedin',
+    description: 'LinkedIn Profile',
+    defaultSize: { width: 800, height: 640 },
+    minSize: { width: 500, height: 600 },
+  },
 ];
 
 export function getApp(id: string): AppDefinition | undefined {

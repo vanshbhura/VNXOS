@@ -6,14 +6,46 @@ import type { AppWindow, WindowSnapState } from '../../types/os';
 import ErrorBoundary from '../ErrorBoundary';
 import FileManager from '../apps/FileManager/FileManager';
 import ResumeViewer from '../apps/ResumeViewer';
+import AboutApp from '../apps/AboutApp';
+import ProjectsApp from '../apps/ProjectsApp';
+import CertificatesApp from '../apps/CertificatesApp';
+import CertificationApp from '../apps/CertificationApp';
+import ExperienceApp from '../apps/ExperienceApp';
+import NotesApp from '../apps/NotesApp';
+import ResourcesApp from '../apps/ResourcesApp';
+import AIToolsApp from '../apps/AIToolsApp';
+import GitHubApp from '../apps/GitHubApp';
+import LinkedInApp from '../apps/LinkedInApp';
 
 // Map of appId -> component to render inside the window
 function AppContent({ win }: { win: AppWindow }) {
   switch (win.appId) {
     case 'file-manager':
       return <FileManager window={win} />;
+    case 'trash':
+      return <FileManager window={{ ...win, initialPath: win.initialPath || '/home/vansh/Trash' }} />;
     case 'resume':
       return <ResumeViewer />;
+    case 'about':
+      return <AboutApp />;
+    case 'projects':
+      return <ProjectsApp />;
+    case 'certificates':
+      return <CertificatesApp />;
+    case 'certifications':
+      return <CertificationApp />;
+    case 'experience':
+      return <ExperienceApp />;
+    case 'notes':
+      return <NotesApp />;
+    case 'resources':
+      return <ResourcesApp />;
+    case 'ai-tools':
+      return <AIToolsApp />;
+    case 'github':
+      return <GitHubApp />;
+    case 'linkedin':
+      return <LinkedInApp />;
     default:
       return null; // Falls through to the "Coming Soon" placeholder in WindowFrame
   }

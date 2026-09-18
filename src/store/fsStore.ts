@@ -259,7 +259,7 @@ export const useFileSystemStore = create<FileSystemStore>()(
       }
     }),
     {
-      name: 'vnx-fs-v3', // Versioned key: bump this to wipe old stale data
+      name: 'vnx-fs-v4', // Versioned key: bumped for Phase 4 core applications
       // Safe merge: persist user-created nodes on top of base static portfolio nodes
       merge: (persistedState: unknown, currentState: FileSystemStore): FileSystemStore => {
         try {

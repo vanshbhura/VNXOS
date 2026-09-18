@@ -130,6 +130,31 @@ export default function FileManager({ window: appWindow }: FileManagerProps) {
 
   // Double click handling for files/folders
   const handleItemDoubleClick = (node: FileSystemNode) => {
+    const appMap: Record<string, string> = {
+      'Projects': 'projects',
+      'About Me': 'about',
+      'About': 'about',
+      'Experience': 'experience',
+      'Certificates': 'certificates',
+      'Certification': 'certifications',
+      'GitHub': 'github',
+      'LinkedIn': 'linkedin',
+      'Resources': 'resources',
+      'AI Tools': 'ai-tools',
+      'Notes.txt': 'notes',
+      'Notes': 'notes',
+      'Trash': 'trash'
+    };
+
+    const targetAppId = appMap[node.name];
+    if (targetAppId) {
+      const app = getApp(targetAppId);
+      if (app) {
+        openWindow(app);
+        return;
+      }
+    }
+
     if (node.type === 'folder' || node.targetPath) {
       navigateTo(node.targetPath || node.path);
     } else if (node.extension === '.pdf') {
