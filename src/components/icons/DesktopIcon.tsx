@@ -4,6 +4,7 @@ import type { FileSystemNode } from '../../types/fs';
 import { useOSStore } from '../../store/osStore';
 import { getApp } from '../../data/apps';
 import { getIconForNode } from '../apps/FileManager/FileGrid';
+import { GITHUB_PROFILE_URL, LINKEDIN_PROFILE_URL, openExternalLink } from '../../data/socialLinks';
 
 interface DesktopIconProps {
   icon: FileSystemNode;
@@ -24,6 +25,15 @@ export default function DesktopIcon({ icon }: DesktopIconProps) {
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
 
+    if (icon.name === 'GitHub' || icon.id === 'desktop_github') {
+      openExternalLink(GITHUB_PROFILE_URL);
+      return;
+    }
+    if (icon.name === 'LinkedIn' || icon.id === 'desktop_linkedin') {
+      openExternalLink(LINKEDIN_PROFILE_URL);
+      return;
+    }
+
     const appMap: Record<string, string> = {
       'Projects': 'projects',
       'About Me': 'about',
@@ -31,8 +41,6 @@ export default function DesktopIcon({ icon }: DesktopIconProps) {
       'Experience': 'experience',
       'Certificates': 'certificates',
       'Certification': 'certifications',
-      'GitHub': 'github',
-      'LinkedIn': 'linkedin',
       'Resources': 'resources',
       'AI Tools': 'ai-tools',
       'Notes.txt': 'notes',

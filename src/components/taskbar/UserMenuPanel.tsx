@@ -4,6 +4,7 @@ import { User, Settings, Lock, Moon, Power, LogOut, ExternalLink } from 'lucide-
 import { useSettingsStore } from '../../store/settingsStore';
 import { useOSStore } from '../../store/osStore';
 import { getApp } from '../../data/apps';
+import { GITHUB_PROFILE_URL, LINKEDIN_PROFILE_URL, openExternalLink } from '../../data/socialLinks';
 
 export default function UserMenuPanel() {
   const { setPowerState, setActiveOverlay } = useSettingsStore();
@@ -15,6 +16,11 @@ export default function UserMenuPanel() {
     close();
     const app = getApp(id);
     if (app) openWindow(app);
+  };
+
+  const handleExternal = (url: string) => {
+    close();
+    openExternalLink(url);
   };
 
   const handleLock = () => { close(); setPowerState('locked'); };
@@ -91,8 +97,8 @@ export default function UserMenuPanel() {
 
       <div style={{ margin: '4px 6px', height: 1, background: 'rgba(255,255,255,0.06)' }} />
 
-      {menuItem(<ExternalLink size={13} />, 'GitHub Profile', () => openApp('github'))}
-      {menuItem(<ExternalLink size={13} />, 'LinkedIn', () => openApp('linkedin'))}
+      {menuItem(<ExternalLink size={13} />, 'GitHub Profile', () => handleExternal(GITHUB_PROFILE_URL))}
+      {menuItem(<ExternalLink size={13} />, 'LinkedIn', () => handleExternal(LINKEDIN_PROFILE_URL))}
 
       <div style={{ margin: '4px 6px', height: 1, background: 'rgba(255,255,255,0.06)' }} />
 

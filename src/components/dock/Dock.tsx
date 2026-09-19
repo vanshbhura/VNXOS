@@ -5,6 +5,7 @@ import { dockItems } from '../../data/dockItems';
 import { useOSStore } from '../../store/osStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { getApp } from '../../data/apps';
+import { GITHUB_PROFILE_URL, LINKEDIN_PROFILE_URL, openExternalLink } from '../../data/socialLinks';
 
 function LucideIcon({ name, size = 22 }: { name: string; size?: number }) {
   const Icons = LucideIcons as unknown as Record<string, React.ComponentType<{ size?: number }>>;
@@ -44,6 +45,15 @@ function DockItemComponent({ id, icon, label, appId, iconSize }: DockItemCompone
       return;
     }
     if (appId) {
+      if (appId === 'github') {
+        openExternalLink(GITHUB_PROFILE_URL);
+        return;
+      }
+      if (appId === 'linkedin') {
+        openExternalLink(LINKEDIN_PROFILE_URL);
+        return;
+      }
+
       if (isActive) {
         if (isAllMinimized) {
           restoreWindow(activeWindows[0].id);

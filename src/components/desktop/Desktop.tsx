@@ -275,22 +275,88 @@ export default function Desktop() {
         </div>
       </div>
 
-      {/* Desktop Icons */}
+      {/* Desktop Icons — multi-column grid that stays inside the safe area */}
       {desktopIconSettings.visible && (
+        <DesktopIconGrid icons={icons} iconScale={iconScale} />
+      )}
+    </motion.div>
+  );
+}
+
+// ── Responsive icon grid ──────────────────────────────────────────────────────
+// Keeps all icons inside the safe desktop area (topbar → dock).
+// When a column fills up, icons wrap into the next column automatically.
+
+const TOP_BAR_H = 28;       // fixed top bar height (px)
+const SAFE_TOP_PAD = 12;    // gap from top bar to first icon (px)
+const SAFE_LEFT_PAD = 12;   // gap from left edge to first column (px)
+const DOCK_CLEARANCE = 92;  // estimated bottom dock height + margin (px)
+const ICON_H = 98;          // icon box (44) + gap (6) + label (~18) + padding (2×8) ≈ 98px
+const COL_GAP = 4;          // horizontal gap between columns (px)
+const ROW_GAP = 2;          // vertical gap between rows (px, matches gap:4 in CSS)
+
+function useViewport() {
+  const [size, setSize] = React.useState({
+    w: typeof window !== 'undefined' ? window.innerWidth : 1440,
+    h: typeof window !== 'undefined' ? window.innerHeight : 900,
+  });
+  React.useEffect(() => {
+    const handler = () => setSize({ w: window.innerWidth, h: window.innerHeight });
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+  return size;
+}
+
+interface IconGridProps {
+  icons: import('../../types/fs').FileSystemNode[];
+  iconScale: number;
+}
+
+function DesktopIconGrid({ icons, iconScale }: IconGridProps) {
+  const { h } = useViewport();
+
+  // Safe vertical area available for icons (between topbar and dock)
+  const safeH = h - TOP_BAR_H - SAFE_TOP_PAD - DOCK_CLEARANCE;
+
+  // How many icons fit in one column at this viewport height
+  const iconsPerCol = Math.max(1, Math.floor(safeH / (ICON_H * iconScale + ROW_GAP)));
+
+  // Split icons into columns
+  const columns: (typeof icons)[] = [];
+  for (let i = 0; i < icons.length; i += iconsPerCol) {
+    columns.push(icons.slice(i, i + iconsPerCol));
+  }
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: SAFE_TOP_PAD,
+        left: SAFE_LEFT_PAD,
+        display: 'flex',
+        flexDirection: 'row',
+        gap: COL_GAP,
+        alignItems: 'flex-start',
+      }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      {columns.map((col, ci) => (
         <div
+          key={ci}
           style={{
-            position: 'absolute', top: 16, left: 16,
-            display: 'flex', flexDirection: 'column', gap: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: ROW_GAP,
             transform: `scale(${iconScale})`,
             transformOrigin: 'top left',
           }}
-          onClick={(e) => e.stopPropagation()}
         >
-          {icons.map((icon) => (
+          {col.map((icon) => (
             <DesktopIcon key={icon.id} icon={icon} />
           ))}
         </div>
-      )}
-    </motion.div>
+      ))}
+    </div>
   );
 }

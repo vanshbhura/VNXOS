@@ -1,3 +1,5 @@
+import { GITHUB_PROFILE_URL, LINKEDIN_PROFILE_URL } from './socialLinks';
+
 export interface SocialLink {
   label: string;
   url: string;
@@ -45,12 +47,12 @@ export const profileData: Profile = {
   socialLinks: [
     {
       label: 'GitHub',
-      url: 'https://github.com/vanshbhura',
+      url: GITHUB_PROFILE_URL,
       icon: 'Code'
     },
     {
       label: 'LinkedIn',
-      url: '', // Leave empty until real LinkedIn URL is provided
+      url: LINKEDIN_PROFILE_URL,
       icon: 'User'
     }
   ]

@@ -5,6 +5,7 @@ import { useOSStore } from '../../store/osStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { appRegistry, getApp } from '../../data/apps';
 import { Search, X, Star, StarOff, Clock } from 'lucide-react';
+import { GITHUB_PROFILE_URL, LINKEDIN_PROFILE_URL, openExternalLink } from '../../data/socialLinks';
 
 // ─── App category mapping ─────────────────────────────────────────────────────
 
@@ -94,6 +95,14 @@ export default function AppLauncher() {
 
   const handleLaunch = (appId: string) => {
     setOpen(false);
+    if (appId === 'github') {
+      openExternalLink(GITHUB_PROFILE_URL);
+      return;
+    }
+    if (appId === 'linkedin') {
+      openExternalLink(LINKEDIN_PROFILE_URL);
+      return;
+    }
     const appDef = getApp(appId);
     if (appDef) openWindow(appDef);
   };

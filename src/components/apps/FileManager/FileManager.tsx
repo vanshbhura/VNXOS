@@ -9,6 +9,7 @@ import FileList from './FileList';
 import PropertiesDialog from './PropertiesDialog';
 import type { FileSystemNode } from '../../../types/fs';
 import type { AppWindow } from '../../../types/os';
+import { GITHUB_PROFILE_URL, LINKEDIN_PROFILE_URL, openExternalLink } from '../../../data/socialLinks';
 
 interface FileManagerProps {
   window: AppWindow;
@@ -130,6 +131,15 @@ export default function FileManager({ window: appWindow }: FileManagerProps) {
 
   // Double click handling for files/folders
   const handleItemDoubleClick = (node: FileSystemNode) => {
+    if (node.name === 'GitHub' || node.id === 'desktop_github') {
+      openExternalLink(GITHUB_PROFILE_URL);
+      return;
+    }
+    if (node.name === 'LinkedIn' || node.id === 'desktop_linkedin') {
+      openExternalLink(LINKEDIN_PROFILE_URL);
+      return;
+    }
+
     const appMap: Record<string, string> = {
       'Projects': 'projects',
       'About Me': 'about',
@@ -137,8 +147,6 @@ export default function FileManager({ window: appWindow }: FileManagerProps) {
       'Experience': 'experience',
       'Certificates': 'certificates',
       'Certification': 'certifications',
-      'GitHub': 'github',
-      'LinkedIn': 'linkedin',
       'Resources': 'resources',
       'AI Tools': 'ai-tools',
       'Notes.txt': 'notes',

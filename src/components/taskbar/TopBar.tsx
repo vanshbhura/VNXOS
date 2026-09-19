@@ -1,17 +1,19 @@
 import React, { useRef, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useTime } from '../../hooks/useTime';
+import { useBattery } from '../../hooks/useBattery';
 import { useOSStore } from '../../store/osStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { getApp } from '../../data/apps';
 import {
-  Wifi, WifiOff, Volume2, VolumeX, BatteryCharging, Battery,
+  Wifi, WifiOff, Volume2, VolumeX, BatteryCharging, Battery, BatteryLow,
   ChevronDown, Bell, User,
 } from 'lucide-react';
 import QuickSettingsPanel from './QuickSettingsPanel';
 import NotificationCenterPanel from './NotificationCenterPanel';
 import CalendarPanel from './CalendarPanel';
 import UserMenuPanel from './UserMenuPanel';
+
 
 // Applications menu items
 const APP_MENU_ITEMS = [
@@ -106,10 +108,11 @@ function TopMenuButton({
 
 export default function TopBar() {
   const { timeStr, dateStr } = useTime();
+  const battery = useBattery();
   const toggleLauncher = useOSStore((s) => s.toggleLauncher);
 
   const {
-    simulatedWifi, simulatedVolume, simulatedBattery,
+    simulatedWifi, simulatedVolume,
     activeOverlay, toggleOverlay, setActiveOverlay,
     notifications,
   } = useSettingsStore();
@@ -130,7 +133,20 @@ export default function TopBar() {
     return () => document.removeEventListener('mousedown', handler);
   }, [activeOverlay, setActiveOverlay]);
 
-  const batteryColor = simulatedBattery.level < 20 ? '#ef4444' : '#94a3b8';
+  // Battery display helpers
+  const batteryLevel = battery.level;   // null | 0–100
+  const batteryCharging = battery.charging;
+  const batteryColor =
+    batteryLevel === null ? '#94a3b8'
+    : batteryLevel < 15  ? '#ef4444'
+    : batteryLevel < 30  ? '#f97316'
+    : '#94a3b8';
+
+  function BatteryIcon() {
+    if (batteryCharging) return <BatteryCharging size={12} style={{ color: '#4ade80', opacity: 0.85 }} />;
+    if (batteryLevel !== null && batteryLevel < 15) return <BatteryLow size={12} style={{ color: batteryColor, opacity: 0.85 }} />;
+    return <Battery size={12} style={{ color: batteryColor, opacity: 0.75 }} />;
+  }
 
   return (
     <div ref={topbarRef}>
@@ -205,11 +221,17 @@ export default function TopBar() {
           <button
             className="topbar-btn"
             onClick={() => toggleOverlay('quick-settings')}
-            title="Quick Settings — Battery"
-            aria-label={`Battery: ${simulatedBattery.level}%${simulatedBattery.charging ? ' (charging)' : ''}`}
+            title={battery.supported
+              ? `Battery: ${batteryLevel ?? '…'}%${batteryCharging ? ' (charging)' : ''}`
+              : 'Battery status unavailable'}
+            aria-label={battery.supported
+              ? `Battery: ${batteryLevel ?? '…'}%${batteryCharging ? ' (charging)' : ''}`
+              : 'Battery status unavailable'}
           >
-            {simulatedBattery.charging ? <BatteryCharging size={12} style={{ color: '#4ade80', opacity: 0.8 }} /> : <Battery size={12} style={{ color: batteryColor, opacity: 0.7 }} />}
-            <span style={{ fontSize: '11px', opacity: 0.7 }}>{simulatedBattery.level}%</span>
+            <BatteryIcon />
+            <span style={{ fontSize: '11px', opacity: 0.7 }}>
+              {batteryLevel !== null ? batteryLevel + '%' : battery.supported ? '…' : '–'}
+            </span>
           </button>
 
           <div className="w-px h-3 mx-1" style={{ background: 'rgba(255,255,255,0.1)' }} />

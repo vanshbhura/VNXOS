@@ -112,9 +112,9 @@ export default function CertificatesApp() {
                       View Credential
                     </a>
                   )}
-                  {cert.assetPath && (
+                  {(cert.certificatePdf || cert.assetPath) && (
                     <a
-                      href={cert.assetPath}
+                      href={cert.certificatePdf || cert.assetPath}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs md:text-sm font-medium transition-colors border border-slate-700 w-full justify-center"
