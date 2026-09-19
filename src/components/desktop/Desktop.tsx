@@ -2,21 +2,12 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useOSStore } from '../../store/osStore';
 import { useFileSystemStore } from '../../store/fsStore';
+import { useSettingsStore } from '../../store/settingsStore';
+import { getWallpaper } from '../../data/wallpapers';
 import DesktopIcon from '../icons/DesktopIcon';
 import type { ContextMenuItem } from '../../types/os';
+import { getApp } from '../../data/apps';
 
-// Cinematic mountain/night wallpaper via CSS gradient
-const wallpaperStyle: React.CSSProperties = {
-  position: 'absolute',
-  inset: 0,
-  background: `
-    radial-gradient(ellipse at 20% 80%, rgba(55, 14, 100, 0.45) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 20%, rgba(15, 50, 120, 0.4) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(20, 10, 40, 0.6) 0%, transparent 70%),
-    radial-gradient(ellipse at 70% 85%, rgba(180, 80, 20, 0.15) 0%, transparent 35%),
-    linear-gradient(175deg, #030308 0%, #080818 25%, #0a0520 50%, #060412 75%, #020208 100%)
-  `,
-};
 
 // Subtle star particles
 function Stars() {
@@ -105,49 +96,147 @@ function AmbientGlow() {
   );
 }
 
-// Desktop context menu items (stable reference outside component)
-const buildContextMenuItems = (
-  showContextMenu: (x: number, y: number, items: ContextMenuItem[]) => void,
-  selectIcon: (id: string | null) => void
-) => (e: React.MouseEvent) => {
-  e.preventDefault();
-  selectIcon(null);
-  showContextMenu(e.clientX, e.clientY, [
-    { id: 'terminal', label: 'Open Terminal', icon: 'Terminal', action: () => console.log('Opening Terminal') },
-    { id: 'new-folder', label: 'New Folder', icon: 'FolderPlus', action: () => console.log('New Folder (placeholder)') },
-    { id: 'new-file', label: 'New Text File', icon: 'FilePlus', action: () => console.log('New Text File (placeholder)') },
-    { id: 'refresh', label: 'Refresh', icon: 'RefreshCw', separator: true, action: () => window.location.reload() },
-    { id: 'display', label: 'Display Settings', icon: 'Monitor', action: () => console.log('Display Settings (placeholder)') },
-    { id: 'personalize', label: 'Personalize', icon: 'Palette', action: () => console.log('Personalize (placeholder)') },
-  ]);
-};
+// Simulated refresh — re-renders desktop state without page reload
+let _desktopRefreshCounter = 0;
+function useDesktopRefresh() {
+  const [, setCounter] = React.useState(0);
+  return React.useCallback(() => {
+    _desktopRefreshCounter++;
+    setCounter(_desktopRefreshCounter);
+  }, []);
+}
 
 export default function Desktop() {
   const selectIcon = useOSStore((s) => s.selectIcon);
   const hideContextMenu = useOSStore((s) => s.hideContextMenu);
   const showContextMenu = useOSStore((s) => s.showContextMenu);
+  const openWindow = useOSStore((s) => s.openWindow);
 
-  // Use fine-grained selectors to avoid re-rendering on every fsStore change
   const nodes = useFileSystemStore((s) => s.nodes);
   const showHidden = useFileSystemStore((s) => s.showHidden);
+  const createFolder = useFileSystemStore((s) => s.createFolder);
+
+  const wallpaper = useSettingsStore((s) => s.wallpaper);
+  const desktopIconSettings = useSettingsStore((s) => s.desktopIconSettings);
+  const setActiveOverlay = useSettingsStore((s) => s.setActiveOverlay);
+
+  const refreshDesktop = useDesktopRefresh();
+  const wallpaperPreset = React.useMemo(() => getWallpaper(wallpaper), [wallpaper]);
+
+  const openWin = React.useCallback((appId: string) => {
+    const app = getApp(appId);
+    if (app) openWindow(app);
+  }, [openWindow]);
+
+  const openSearch = React.useCallback(() => setActiveOverlay('global-search'), [setActiveOverlay]);
+
+  const desktopNode = React.useMemo(
+    () => Object.values(nodes).find(n => n.path === '/home/vansh/Desktop'),
+    [nodes]
+  );
 
   const icons = React.useMemo(() => {
-    const desktopNode = Object.values(nodes).find(n => n.path === '/home/vansh/Desktop');
     if (!desktopNode) return [];
     return Object.values(nodes).filter(
       n => n.parentId === desktopNode.id && (!n.hidden || showHidden)
     );
-  }, [nodes, showHidden]);
+  }, [nodes, showHidden, desktopNode]);
+
+  // Icon size scale
+  const iconScale = desktopIconSettings.size === 'small' ? 0.75
+    : desktopIconSettings.size === 'large' ? 1.3
+    : 1.0;
 
   const handleDesktopClick = React.useCallback(() => {
     selectIcon(null);
     hideContextMenu();
   }, [selectIcon, hideContextMenu]);
 
-  const handleContextMenu = React.useMemo(
-    () => buildContextMenuItems(showContextMenu, selectIcon),
-    [showContextMenu, selectIcon]
-  );
+  const handleContextMenu = React.useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    selectIcon(null);
+
+    const items: ContextMenuItem[] = [
+      {
+        id: 'terminal',
+        label: 'Open Terminal',
+        icon: 'Terminal',
+        action: () => openWin('terminal'),
+      },
+      {
+        id: 'new-folder',
+        label: 'New Folder',
+        icon: 'FolderPlus',
+        action: () => {
+          if (desktopNode) {
+            const name = `New Folder`;
+            createFolder(name, desktopNode.id);
+          }
+        },
+      },
+      {
+        id: 'new-file',
+        label: 'New Text File',
+        icon: 'FilePlus',
+        action: () => openWin('notes'),
+      },
+      {
+        id: 'search',
+        label: 'Global Search',
+        icon: 'Search',
+        separator: true,
+        action: openSearch,
+      },
+      {
+        id: 'wallpaper',
+        label: 'Change Wallpaper',
+        icon: 'Image',
+        action: () => openWin('settings'),
+      },
+      {
+        id: 'settings',
+        label: 'Display Settings',
+        icon: 'Monitor',
+        action: () => openWin('settings'),
+      },
+      {
+        id: 'sort-by',
+        label: 'Sort By Name',
+        icon: 'ArrowUpDown',
+        separator: true,
+        action: () => {
+          // Cosmetic — icons are sorted by filesystem; refresh to re-render
+          refreshDesktop();
+        },
+      },
+      {
+        id: 'refresh',
+        label: 'Refresh Desktop',
+        icon: 'RefreshCw',
+        action: () => {
+          refreshDesktop();
+        },
+      },
+      {
+        id: 'reset-desktop',
+        label: 'Reset Desktop',
+        icon: 'RotateCcw',
+        separator: true,
+        action: () => {
+          try {
+            localStorage.removeItem('vnx_app_states');
+          } catch {
+            // ignore
+          }
+          refreshDesktop();
+        },
+      },
+    ];
+
+    showContextMenu(e.clientX, e.clientY, items);
+  }, [showContextMenu, selectIcon, openWin, openSearch, desktopNode, createFolder, refreshDesktop]);
+
+  const wallpaperStyle: React.CSSProperties = { position: 'absolute', inset: 0, background: wallpaperPreset.background };
 
   return (
     <motion.div
@@ -187,14 +276,21 @@ export default function Desktop() {
       </div>
 
       {/* Desktop Icons */}
-      <div
-        style={{ position: 'absolute', top: 16, left: 16, display: 'flex', flexDirection: 'column', gap: 4 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {icons.map((icon) => (
-          <DesktopIcon key={icon.id} icon={icon} />
-        ))}
-      </div>
+      {desktopIconSettings.visible && (
+        <div
+          style={{
+            position: 'absolute', top: 16, left: 16,
+            display: 'flex', flexDirection: 'column', gap: 4,
+            transform: `scale(${iconScale})`,
+            transformOrigin: 'top left',
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {icons.map((icon) => (
+            <DesktopIcon key={icon.id} icon={icon} />
+          ))}
+        </div>
+      )}
     </motion.div>
   );
 }

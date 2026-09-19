@@ -143,7 +143,11 @@ export default function FileManager({ window: appWindow }: FileManagerProps) {
       'AI Tools': 'ai-tools',
       'Notes.txt': 'notes',
       'Notes': 'notes',
-      'Trash': 'trash'
+      'Trash': 'trash',
+      'Terminal': 'terminal',
+      'Command Prompt': 'cmd',
+      'CMD': 'cmd',
+      'PowerShell': 'powershell'
     };
 
     const targetAppId = appMap[node.name];

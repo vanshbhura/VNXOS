@@ -1,5 +1,71 @@
 @import "tailwindcss";
 
+/* ── CSS Custom Properties / Theme Tokens ──────────────────────────────────── */
+
+:root,
+[data-theme="dark"] {
+  --os-bg: #070710;
+  --os-surface: rgba(10, 10, 22, 0.92);
+  --os-surface-2: rgba(15, 15, 30, 0.7);
+  --os-border: rgba(255, 255, 255, 0.07);
+  --os-border-accent: rgba(139, 92, 246, 0.3);
+  --os-text-primary: rgba(226, 232, 240, 0.92);
+  --os-text-secondary: rgba(148, 163, 184, 0.7);
+  --os-text-muted: rgba(100, 116, 139, 0.6);
+  --os-accent: #7c3aed;
+  --os-accent-light: #a78bfa;
+  --os-accent-hover: rgba(139, 92, 246, 0.2);
+  --os-topbar-bg: rgba(8, 8, 16, 0.75);
+  --os-window-bg: rgba(10, 10, 20, 0.92);
+  --os-dock-bg: rgba(10, 10, 20, 0.7);
+  --os-scrollbar-thumb: rgba(139, 92, 246, 0.4);
+  --os-scrollbar-hover: rgba(139, 92, 246, 0.7);
+  --os-icon-bg: rgba(255, 255, 255, 0.04);
+  --os-icon-border: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="light"] {
+  --os-bg: #e8eaf0;
+  --os-surface: rgba(248, 250, 252, 0.95);
+  --os-surface-2: rgba(241, 245, 249, 0.9);
+  --os-border: rgba(0, 0, 0, 0.09);
+  --os-border-accent: rgba(109, 40, 217, 0.35);
+  --os-text-primary: rgba(15, 23, 42, 0.92);
+  --os-text-secondary: rgba(51, 65, 85, 0.8);
+  --os-text-muted: rgba(100, 116, 139, 0.8);
+  --os-accent: #6d28d9;
+  --os-accent-light: #7c3aed;
+  --os-accent-hover: rgba(109, 40, 217, 0.12);
+  --os-topbar-bg: rgba(241, 245, 249, 0.88);
+  --os-window-bg: rgba(248, 250, 252, 0.96);
+  --os-dock-bg: rgba(241, 245, 249, 0.85);
+  --os-scrollbar-thumb: rgba(109, 40, 217, 0.35);
+  --os-scrollbar-hover: rgba(109, 40, 217, 0.6);
+  --os-icon-bg: rgba(0, 0, 0, 0.04);
+  --os-icon-border: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="high-contrast"] {
+  --os-bg: #000000;
+  --os-surface: rgba(0, 0, 0, 0.98);
+  --os-surface-2: rgba(10, 10, 10, 0.98);
+  --os-border: rgba(255, 255, 255, 0.25);
+  --os-border-accent: rgba(167, 139, 250, 0.8);
+  --os-text-primary: #ffffff;
+  --os-text-secondary: rgba(255, 255, 255, 0.85);
+  --os-text-muted: rgba(255, 255, 255, 0.65);
+  --os-accent: #a78bfa;
+  --os-accent-light: #c4b5fd;
+  --os-accent-hover: rgba(167, 139, 250, 0.25);
+  --os-topbar-bg: rgba(0, 0, 0, 0.98);
+  --os-window-bg: rgba(0, 0, 0, 0.98);
+  --os-dock-bg: rgba(0, 0, 0, 0.98);
+  --os-scrollbar-thumb: rgba(167, 139, 250, 0.7);
+  --os-scrollbar-hover: rgba(167, 139, 250, 1);
+  --os-icon-bg: rgba(255, 255, 255, 0.06);
+  --os-icon-border: rgba(255, 255, 255, 0.2);
+}
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -28,11 +94,11 @@
     border-radius: 2px;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(139, 92, 246, 0.4);
+    background: var(--os-scrollbar-thumb, rgba(139, 92, 246, 0.4));
     border-radius: 2px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(139, 92, 246, 0.7);
+    background: var(--os-scrollbar-hover, rgba(139, 92, 246, 0.7));
   }
 }
 
@@ -45,6 +111,11 @@
     border: 1px solid rgba(255, 255, 255, 0.06);
   }
 
+  [data-theme="light"] .glass {
+    background: rgba(248, 250, 252, 0.75);
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
   .glass-light {
     background: rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(12px);
@@ -53,10 +124,10 @@
   }
 
   .glass-dock {
-    background: rgba(10, 10, 20, 0.7);
+    background: var(--os-dock-bg, rgba(10, 10, 20, 0.7));
     backdrop-filter: blur(24px) saturate(180%);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--os-border, rgba(255, 255, 255, 0.08));
   }
 
   /* Purple glow accent */
@@ -115,6 +186,11 @@
     white-space: nowrap;
   }
 
+  [data-theme="light"] .desktop-icon-label {
+    color: rgba(15, 23, 42, 0.9);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  }
+
   /* Context menu */
   .context-menu-item {
     display: flex;
@@ -122,16 +198,25 @@
     gap: 10px;
     padding: 7px 14px;
     font-size: 12.5px;
-    color: rgba(226, 232, 240, 0.85);
+    color: var(--os-text-primary, rgba(226, 232, 240, 0.85));
     cursor: default;
     border-radius: 4px;
     transition: all 0.1s ease;
     white-space: nowrap;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
   }
 
   .context-menu-item:hover {
     background: rgba(139, 92, 246, 0.18);
     color: #e2e8f0;
+  }
+
+  [data-theme="light"] .context-menu-item:hover {
+    background: rgba(109, 40, 217, 0.12);
+    color: rgba(15, 23, 42, 0.95);
   }
 
   /* Dock item */
@@ -155,6 +240,7 @@
     cursor: pointer;
     transition: all 0.15s ease;
     border: 1px solid transparent;
+    background: none;
   }
 
   .launcher-item:hover {
@@ -170,13 +256,27 @@
     padding: 2px 8px;
     border-radius: 4px;
     font-size: 12.5px;
-    color: rgba(226, 232, 240, 0.85);
+    color: var(--os-text-primary, rgba(226, 232, 240, 0.85));
     cursor: default;
     transition: background 0.15s ease;
+    background: none;
+    border: none;
   }
 
   .topbar-btn:hover {
     background: rgba(255, 255, 255, 0.1);
     color: #e2e8f0;
+  }
+
+  [data-theme="light"] .topbar-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: rgba(15, 23, 42, 0.95);
+  }
+
+  /* Focus visible ring for accessibility */
+  :focus-visible {
+    outline: 2px solid var(--os-accent, #7c3aed);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }

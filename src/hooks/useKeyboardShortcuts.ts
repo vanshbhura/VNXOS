@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useOSStore } from '../store/osStore';
+import { useSettingsStore } from '../store/settingsStore';
 
 export function useKeyboardShortcuts() {
   // Use individual selectors — object-returning selectors create a new reference each render
@@ -12,17 +13,30 @@ export function useKeyboardShortcuts() {
   const hideContextMenu = useOSStore(s => s.hideContextMenu);
   const setLauncherOpen = useOSStore(s => s.setLauncherOpen);
 
+  const setActiveOverlay = useSettingsStore(s => s.setActiveOverlay);
+  const activeOverlay = useSettingsStore(s => s.activeOverlay);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Escape -> close overlays
+      // Escape -> close overlays & context menu & launcher
       if (e.key === 'Escape') {
         hideContextMenu();
         setLauncherOpen(false);
+        if (activeOverlay !== 'none') {
+          setActiveOverlay('none');
+        }
       }
 
-      // Meta / Super -> toggle launcher
-      if (e.key === 'Meta') {
+      // Meta / Super alone -> toggle launcher
+      if (e.key === 'Meta' && !e.shiftKey && !e.altKey && !e.ctrlKey) {
         toggleLauncher();
+      }
+
+      // Meta+Space OR Ctrl+Space -> global search
+      if (e.key === ' ' && (e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey) {
+        e.preventDefault();
+        setActiveOverlay(activeOverlay === 'global-search' ? 'none' : 'global-search');
+        setLauncherOpen(false);
       }
 
       // Alt + F4 -> close focused window
@@ -45,5 +59,9 @@ export function useKeyboardShortcuts() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [windows, closeWindow, maximizeWindow, restoreWindow, hideContextMenu, setLauncherOpen, toggleLauncher]);
+  }, [
+    windows, closeWindow, maximizeWindow, restoreWindow,
+    hideContextMenu, setLauncherOpen, toggleLauncher,
+    setActiveOverlay, activeOverlay,
+  ]);
 }

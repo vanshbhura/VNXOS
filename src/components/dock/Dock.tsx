@@ -1,8 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as LucideIcons from 'lucide-react';
 import { dockItems } from '../../data/dockItems';
 import { useOSStore } from '../../store/osStore';
+import { useSettingsStore } from '../../store/settingsStore';
 import { getApp } from '../../data/apps';
 
 function LucideIcon({ name, size = 22 }: { name: string; size?: number }) {
@@ -17,10 +18,10 @@ interface DockItemComponentProps {
   icon: string;
   label: string;
   appId?: string;
-  onLaunch?: () => void;
+  iconSize: number;
 }
 
-function DockItemComponent({ id, icon, label, appId, onLaunch }: DockItemComponentProps) {
+function DockItemComponent({ id, icon, label, appId, iconSize }: DockItemComponentProps) {
   const [hovered, setHovered] = useState(false);
   const openWindow = useOSStore((s) => s.openWindow);
   const toggleLauncher = useOSStore((s) => s.toggleLauncher);
@@ -34,27 +35,22 @@ function DockItemComponent({ id, icon, label, appId, onLaunch }: DockItemCompone
   const isFocused = activeWindows.some(w => w.isFocused);
   const isAllMinimized = activeWindows.length > 0 && activeWindows.every(w => w.state === 'minimized');
 
+  const iconPx = iconSize;
+  const innerIconPx = Math.round(iconSize * 0.5);
+
   const handleClick = () => {
     if (id === 'launcher') {
       toggleLauncher();
       return;
     }
-    if (onLaunch) {
-      onLaunch();
-      return;
-    }
     if (appId) {
       if (isActive) {
-        // App is already open
         if (isAllMinimized) {
-          // Restore the first minimized one
           restoreWindow(activeWindows[0].id);
           focusWindow(activeWindows[0].id);
         } else if (isFocused) {
-          // If focused, minimize it
           minimizeWindow(activeWindows.find(w => w.isFocused)!.id);
         } else {
-          // Not focused, bring to front
           const visibleWin = activeWindows.find(w => w.state !== 'minimized');
           if (visibleWin) focusWindow(visibleWin.id);
         }
@@ -63,10 +59,7 @@ function DockItemComponent({ id, icon, label, appId, onLaunch }: DockItemCompone
 
       const app = getApp(appId);
       if (app) {
-        console.log(`Dock: Opening ${app.name}`);
         openWindow(app);
-      } else {
-        console.log(`Dock: App "${appId}" not yet implemented`);
       }
     }
   };
@@ -77,6 +70,10 @@ function DockItemComponent({ id, icon, label, appId, onLaunch }: DockItemCompone
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={handleClick}
+      role="button"
+      aria-label={label}
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleClick(); }}
     >
       {/* Tooltip */}
       <AnimatePresence>
@@ -113,9 +110,9 @@ function DockItemComponent({ id, icon, label, appId, onLaunch }: DockItemCompone
         animate={{ scale: hovered ? 1.25 : 1, y: hovered ? -6 : 0 }}
         transition={{ type: 'spring', stiffness: 380, damping: 22 }}
         style={{
-          width: 44,
-          height: 44,
-          borderRadius: 12,
+          width: iconPx,
+          height: iconPx,
+          borderRadius: Math.round(iconPx * 0.27),
           background: id === 'launcher'
             ? 'linear-gradient(135deg, rgba(124,58,237,0.5), rgba(37,99,235,0.5))'
             : 'rgba(255,255,255,0.07)',
@@ -130,9 +127,9 @@ function DockItemComponent({ id, icon, label, appId, onLaunch }: DockItemCompone
           boxShadow: hovered ? '0 4px 20px rgba(0,0,0,0.4)' : 'none',
         }}
       >
-        <LucideIcon name={icon} size={20} />
+        <LucideIcon name={icon} size={innerIconPx} />
       </motion.div>
-      
+
       {/* Active Indicator */}
       <AnimatePresence>
         {isActive && (
@@ -158,47 +155,100 @@ function DockItemComponent({ id, icon, label, appId, onLaunch }: DockItemCompone
 }
 
 export default function Dock() {
+  const dockSettings = useSettingsStore((s) => s.dockSettings);
+  const { visible, autoHide, iconSize, position } = dockSettings;
+
+  const [isAutoHideVisible, setIsAutoHideVisible] = useState(false);
+
+  if (!visible) return null;
+
+  const positionStyles: React.CSSProperties = position === 'bottom'
+    ? { bottom: 12, left: '50%', transform: 'translateX(-50%)', flexDirection: 'row' }
+    : position === 'left'
+    ? { left: 8, top: '50%', transform: 'translateY(-50%)', flexDirection: 'column' }
+    : { right: 8, top: '50%', transform: 'translateY(-50%)', flexDirection: 'column' };
+
+  // Auto-hide: dock is only visible on hover near its edge
+  const autoHideStyle: React.CSSProperties = autoHide
+    ? {
+        opacity: isAutoHideVisible ? 1 : 0,
+        transform: position === 'bottom'
+          ? `translateX(-50%) translateY(${isAutoHideVisible ? 0 : 80}px)`
+          : position === 'left'
+          ? `translateY(-50%) translateX(${isAutoHideVisible ? 0 : -80}px)`
+          : `translateY(-50%) translateX(${isAutoHideVisible ? 0 : 80}px)`,
+        transition: 'opacity 0.25s ease, transform 0.25s ease',
+        pointerEvents: isAutoHideVisible ? 'auto' : 'none',
+      }
+    : {};
+
+  // Auto-hide detector zone
+  const triggerZone: React.CSSProperties = autoHide ? {
+    position: 'fixed',
+    ...(position === 'bottom' ? { bottom: 0, left: 0, right: 0, height: 8 } :
+       position === 'left' ? { left: 0, top: 0, bottom: 0, width: 8 } :
+       { right: 0, top: 0, bottom: 0, width: 8 }),
+    zIndex: 39,
+  } : {};
+
   return (
-    <div
-      className="fixed bottom-3 left-1/2 z-40"
-      style={{ transform: 'translateX(-50%)' }}
-    >
+    <>
+      {/* Auto-hide trigger zone */}
+      {autoHide && (
+        <div
+          style={triggerZone}
+          onMouseEnter={() => setIsAutoHideVisible(true)}
+          onMouseLeave={() => setIsAutoHideVisible(false)}
+        />
+      )}
+
       <div
-        className="glass-dock"
+        className="fixed z-40"
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          padding: '6px 10px',
-          borderRadius: '18px',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3)',
+          ...positionStyles,
+          ...autoHideStyle,
         }}
+        onMouseEnter={() => autoHide && setIsAutoHideVisible(true)}
+        onMouseLeave={() => autoHide && setIsAutoHideVisible(false)}
       >
-        {dockItems.map((item, idx) => {
-          // Add separator before trash
-          const showSep = item.id === 'trash';
-          return (
-            <React.Fragment key={item.id}>
-              {showSep && (
-                <div
-                  style={{
-                    width: 1,
-                    height: 28,
-                    background: 'rgba(255,255,255,0.12)',
-                    margin: '0 3px',
-                  }}
+        <div
+          className="glass-dock"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection: position === 'bottom' ? 'row' : 'column',
+            gap: '6px',
+            padding: '6px 10px',
+            borderRadius: '18px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3)',
+          }}
+        >
+          {dockItems.map((item) => {
+            const showSep = item.id === 'trash';
+            return (
+              <React.Fragment key={item.id}>
+                {showSep && (
+                  <div
+                    style={{
+                      width: position === 'bottom' ? 1 : '100%',
+                      height: position === 'bottom' ? 28 : 1,
+                      background: 'rgba(255,255,255,0.12)',
+                      margin: '0 3px',
+                    }}
+                  />
+                )}
+                <DockItemComponent
+                  id={item.id}
+                  icon={item.icon}
+                  label={item.label}
+                  appId={item.appId}
+                  iconSize={iconSize}
                 />
-              )}
-              <DockItemComponent
-                id={item.id}
-                icon={item.icon}
-                label={item.label}
-                appId={item.appId}
-              />
-            </React.Fragment>
-          );
-        })}
+              </React.Fragment>
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -9,7 +9,10 @@ import ContextMenu from './components/desktop/ContextMenu';
 import WindowManager from './components/window/WindowManager';
 import TaskSwitcher from './components/window/TaskSwitcher';
 import MobileFallback from './components/desktop/MobileFallback';
+import PowerOverlays from './components/desktop/PowerOverlays';
+import GlobalSearch from './components/desktop/GlobalSearch';
 import { useOSStore } from './store/osStore';
+import { useSettingsStore } from './store/settingsStore';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import ErrorBoundary from './components/ErrorBoundary';
 
@@ -26,6 +29,7 @@ function useIsMobile() {
 export default function App() {
   const [bootDone, setBootDone] = useState(false);
   const setBootComplete = useOSStore((s) => s.setBootComplete);
+  const theme = useSettingsStore((s) => s.theme);
   const isMobile = useIsMobile();
   useKeyboardShortcuts();
 
@@ -53,11 +57,12 @@ export default function App() {
 
   return (
     <div
+      data-theme={theme}
       style={{
         width: '100vw',
         height: '100vh',
         overflow: 'hidden',
-        background: '#070710',
+        background: 'var(--os-bg, #070710)',
         position: 'relative',
       }}
     >
@@ -85,6 +90,12 @@ export default function App() {
           <AppLauncher />
           <ContextMenu />
           <TaskSwitcher />
+          <ErrorBoundary label="Global Search">
+            <GlobalSearch />
+          </ErrorBoundary>
+          <ErrorBoundary label="Power Overlays">
+            <PowerOverlays />
+          </ErrorBoundary>
         </motion.div>
       )}
     </div>

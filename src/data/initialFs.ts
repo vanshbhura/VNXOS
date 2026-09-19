@@ -261,6 +261,33 @@ export const initialFsNodes: FileSystemNode[] = [
     icon: 'Trash2',
     modifiedDate: now,
   },
+  {
+    id: 'desktop_terminal',
+    name: 'Terminal',
+    type: 'file',
+    parentId: 'desktop',
+    path: '/home/vansh/Desktop/Terminal',
+    icon: 'Terminal',
+    modifiedDate: now,
+  },
+  {
+    id: 'desktop_cmd',
+    name: 'Command Prompt',
+    type: 'file',
+    parentId: 'desktop',
+    path: '/home/vansh/Desktop/Command Prompt',
+    icon: 'Terminal',
+    modifiedDate: now,
+  },
+  {
+    id: 'desktop_powershell',
+    name: 'PowerShell',
+    type: 'file',
+    parentId: 'desktop',
+    path: '/home/vansh/Desktop/PowerShell',
+    icon: 'Terminal',
+    modifiedDate: now,
+  },
   // --- Projects ---
   {
     id: 'proj_enterprise',

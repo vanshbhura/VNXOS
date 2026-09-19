@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as LucideIcons from 'lucide-react';
 import { useOSStore } from '../../store/osStore';
+import { useSettingsStore } from '../../store/settingsStore';
 import type { AppWindow, WindowSnapState } from '../../types/os';
 import ErrorBoundary from '../ErrorBoundary';
 import FileManager from '../apps/FileManager/FileManager';
@@ -16,10 +17,18 @@ import ResourcesApp from '../apps/ResourcesApp';
 import AIToolsApp from '../apps/AIToolsApp';
 import GitHubApp from '../apps/GitHubApp';
 import LinkedInApp from '../apps/LinkedInApp';
+import TerminalView from '../apps/terminal/TerminalView';
+import SettingsApp from '../apps/SettingsApp';
 
 // Map of appId -> component to render inside the window
 function AppContent({ win }: { win: AppWindow }) {
   switch (win.appId) {
+    case 'terminal':
+      return <TerminalView shell="bash" window={win} />;
+    case 'cmd':
+      return <TerminalView shell="cmd" window={win} />;
+    case 'powershell':
+      return <TerminalView shell="powershell" window={win} />;
     case 'file-manager':
       return <FileManager window={win} />;
     case 'trash':
@@ -46,6 +55,8 @@ function AppContent({ win }: { win: AppWindow }) {
       return <GitHubApp />;
     case 'linkedin':
       return <LinkedInApp />;
+    case 'settings':
+      return <SettingsApp />;
     default:
       return null; // Falls through to the "Coming Soon" placeholder in WindowFrame
   }
@@ -77,6 +88,10 @@ function WindowFrame({ win, children }: WindowFrameProps) {
   const showContextMenu = useOSStore((s) => s.showContextMenu);
   const hideContextMenu = useOSStore((s) => s.hideContextMenu);
 
+  const windowSettings = useSettingsStore((s) => s.windowSettings);
+  const animationsOn = windowSettings.animations;
+  const snapOn = windowSettings.snap;
+
   const [snapPreview, setSnapPreview] = useState<WindowSnapState>('none');
   const dragRef = React.useRef<{ startX: number; startY: number; winX: number; winY: number } | null>(null);
   const resizeRef = React.useRef<{ startX: number; startY: number; winX: number; winY: number; winW: number; winH: number; dir: string } | null>(null);
@@ -105,11 +120,13 @@ function WindowFrame({ win, children }: WindowFrameProps) {
     const onMove = (me: MouseEvent) => {
       if (!dragRef.current) return;
       
-      // Calculate snap preview
-      if (me.clientY <= 10) setSnapPreview('maximized');
-      else if (me.clientX <= 10) setSnapPreview('left');
-      else if (me.clientX >= window.innerWidth - 10) setSnapPreview('right');
-      else setSnapPreview('none');
+      // Calculate snap preview (only if snap enabled)
+      if (snapOn) {
+        if (me.clientY <= 10) setSnapPreview('maximized');
+        else if (me.clientX <= 10) setSnapPreview('left');
+        else if (me.clientX >= window.innerWidth - 10) setSnapPreview('right');
+        else setSnapPreview('none');
+      }
 
       const dx = me.clientX - dragRef.current.startX;
       const dy = me.clientY - dragRef.current.startY;
@@ -125,6 +142,7 @@ function WindowFrame({ win, children }: WindowFrameProps) {
       
       // Apply snap
       setSnapPreview((prev: WindowSnapState) => {
+        if (!snapOn) return 'none';
         if (prev === 'maximized') maximizeWindow(win.id);
         else if (prev === 'left') {
           moveWindow(win.id, 0, 28);
@@ -240,10 +258,10 @@ function WindowFrame({ win, children }: WindowFrameProps) {
       </AnimatePresence>
 
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        initial={animationsOn ? { opacity: 0, scale: 0.95, y: 10 } : false}
         animate={{ opacity: 1, scale: 1, y: 0, ...style }}
-        exit={{ opacity: 0, scale: 0.95, y: 30 }}
-        transition={{ type: 'spring', stiffness: 450, damping: 35, bounce: 0 }}
+        exit={animationsOn ? { opacity: 0, scale: 0.95, y: 30 } : { opacity: 0 }}
+        transition={animationsOn ? { type: 'spring', stiffness: 450, damping: 35, bounce: 0 } : { duration: 0 }}
         style={{
           position: 'fixed',
           zIndex: win.zIndex,

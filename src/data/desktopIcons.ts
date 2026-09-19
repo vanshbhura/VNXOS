@@ -50,6 +50,22 @@ export const desktopIcons: DesktopIconDef[] = [
     appId: 'terminal',
   },
   {
+    id: 'cmd',
+    label: 'Command Prompt',
+    icon: 'Terminal',
+    iconColor: 'text-slate-300',
+    type: 'app',
+    appId: 'cmd',
+  },
+  {
+    id: 'powershell',
+    label: 'PowerShell',
+    icon: 'Terminal',
+    iconColor: 'text-blue-400',
+    type: 'app',
+    appId: 'powershell',
+  },
+  {
     id: 'notes',
     label: 'Notes',
     icon: 'StickyNote',

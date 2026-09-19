@@ -9,8 +9,6 @@ interface DesktopIconProps {
   icon: FileSystemNode;
 }
 
-// Removed inline LucideIcon in favor of getIconForNode
-
 export default function DesktopIcon({ icon }: DesktopIconProps) {
   const selectedIconId = useOSStore((s) => s.selectedIconId);
   const selectIcon = useOSStore((s) => s.selectIcon);
@@ -38,7 +36,11 @@ export default function DesktopIcon({ icon }: DesktopIconProps) {
       'Resources': 'resources',
       'AI Tools': 'ai-tools',
       'Notes.txt': 'notes',
-      'Trash': 'trash'
+      'Trash': 'trash',
+      'Terminal': 'terminal',
+      'Command Prompt': 'cmd',
+      'CMD': 'cmd',
+      'PowerShell': 'powershell',
     };
 
     const targetAppId = appMap[icon.name];
@@ -62,12 +64,15 @@ export default function DesktopIcon({ icon }: DesktopIconProps) {
     if (icon.extension === '.pdf') {
       const app = getApp('resume');
       if (app) openWindow(app);
-      else console.log(`Opening ${icon.name} with default handler`);
       return;
     }
 
-    // Default handler for now
-    console.log(`Opening ${icon.name}`);
+    // Default: open in file manager context
+    const fm = getApp('file-manager');
+    if (fm) {
+      const dir = icon.path.split('/').slice(0, -1).join('/') || '/';
+      openWindow(fm, undefined, dir, true);
+    }
   };
 
   return (
@@ -78,6 +83,10 @@ export default function DesktopIcon({ icon }: DesktopIconProps) {
       whileHover={{ scale: 1.04 }}
       whileTap={{ scale: 0.97 }}
       transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+      role="button"
+      aria-label={`Desktop icon: ${icon.name}`}
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') handleDoubleClick(e as unknown as React.MouseEvent); }}
     >
       <div
         className="flex items-center justify-center"

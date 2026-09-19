@@ -7,7 +7,8 @@ export interface SocialLink {
 export interface Education {
   institution: string;
   degree: string;
-  duration: string;
+  duration?: string;
+  cgpa?: string;
   details?: string;
 }
 
@@ -17,31 +18,40 @@ export interface Profile {
   introduction: string;
   education: Education[];
   technicalInterests: string[];
-  skills: string[];
   currentFocus: string;
   socialLinks: SocialLink[];
-  email: string;
+  email?: string;
 }
 
 export const profileData: Profile = {
   name: 'Vansh Bhura',
-  role: 'Software Engineer & AI Specialist',
-  introduction: 'I build robust applications and intelligent systems, focusing on AI-driven solutions and seamless user experiences. Welcome to my personal OS portfolio.',
+  role: 'AI/ML Engineer',
+  introduction: 'AI/ML Engineer passionate about intelligent systems, machine learning architectures, and scalable interactive software. Building next-generation tools and exploring the frontiers of artificial intelligence.',
   education: [
     {
-      institution: 'University of Technology',
-      degree: 'B.S. in Computer Science',
-      duration: '2020 - 2024',
-      details: 'Specialization in Machine Learning and Systems Architecture.'
+      institution: 'NIMS University',
+      degree: 'B.Tech in Artificial Intelligence & Machine Learning',
+      cgpa: '8.3'
     }
   ],
-  technicalInterests: ['Artificial Intelligence', 'Agentic Workflows', 'Web Development', 'Systems Design'],
-  skills: ['TypeScript', 'React', 'Python', 'Machine Learning', 'Node.js', 'Go'],
-  currentFocus: 'Building scalable AI agents and next-gen operating system interfaces for the web.',
-  email: 'hello@example.com',
+  technicalInterests: [
+    'Artificial Intelligence',
+    'Machine Learning',
+    'Deep Learning',
+    'Retrieval-Augmented Generation (RAG)',
+    'Full Stack Systems'
+  ],
+  currentFocus: 'Designing agentic workflows, scalable machine learning pipelines, and interactive web operating environments.',
   socialLinks: [
-    { label: 'GitHub', url: 'https://github.com/vanshbhura', icon: 'Github' },
-    { label: 'LinkedIn', url: 'https://linkedin.com', icon: 'Linkedin' },
-    { label: 'Twitter', url: 'https://twitter.com', icon: 'Twitter' }
+    {
+      label: 'GitHub',
+      url: 'https://github.com/vanshbhura',
+      icon: 'Code'
+    },
+    {
+      label: 'LinkedIn',
+      url: '', // Leave empty until real LinkedIn URL is provided
+      icon: 'User'
+    }
   ]
 };

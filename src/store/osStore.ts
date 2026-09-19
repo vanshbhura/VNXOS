@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import type { OSStore, AppDefinition, WindowRect, ContextMenuItem, AppWindow } from '../types/os';
+import { useSettingsStore } from './settingsStore';
+
 
 function generateId(): string {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
@@ -115,6 +117,18 @@ export const useOSStore = create<OSStore>()((set, get) => ({
       windows: [...s.windows.map((w) => ({ ...w, isFocused: false })), newWindow],
       nextZIndex: s.nextZIndex + 1,
     }));
+
+    // Track in recent items (fire-and-forget, ignore errors)
+    try {
+      useSettingsStore.getState().addRecentItem({
+        title: app.name,
+        type: 'app',
+        icon: app.icon,
+        appId: app.id,
+      });
+    } catch {
+      // ignore — never crash window opening due to recents tracking
+    }
   },
 
   closeWindow: (id) => {
