@@ -315,7 +315,7 @@ export default function TerminalView({ shell = 'bash', window: appWindow }: Term
       </div>
 
       {/* Main Terminal Output Buffer */}
-      <div ref={containerRef} className="flex-1 p-4 overflow-y-auto space-y-2">
+      <div ref={containerRef} className="flex-1 p-4 overflow-y-auto space-y-2 custom-scrollbar">
         {lines.map((line) => (
           <div key={line.id} className="space-y-1">
             {line.type === 'input' && (

@@ -2,6 +2,7 @@ import React from 'react';
 import { profileData } from '../../data/profile';
 import { skillsData } from '../../data/skills';
 import * as LucideIcons from 'lucide-react';
+import { useEasterEggStore } from '../../features/easter-eggs/easterEggStore';
 
 function LucideIcon({ name, size = 16, className = '' }: { name: string; size?: number; className?: string }) {
   const Icons = LucideIcons as unknown as Record<string, React.ComponentType<{ size?: number; className?: string }>>;
@@ -12,6 +13,7 @@ function LucideIcon({ name, size = 16, className = '' }: { name: string; size?: 
 
 export default function AboutApp() {
   const activeSocialLinks = profileData.socialLinks.filter(l => l.url && l.url.trim() !== '');
+  const openDevModal = useEasterEggStore((s) => s.openDevModal);
 
   return (
     <div className="w-full h-full text-slate-200 p-6 md:p-8 overflow-y-auto" style={{ background: 'rgba(15, 23, 42, 0.4)' }}>
@@ -19,8 +21,15 @@ export default function AboutApp() {
         
         {/* Header Section */}
         <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center">
-          <div className="w-20 h-20 md:w-28 md:h-28 rounded-2xl overflow-hidden bg-slate-800/80 flex-shrink-0 border border-white/10 flex items-center justify-center shadow-lg">
-            <LucideIcons.User size={44} className="text-slate-400" />
+          <div
+            onClick={openDevModal}
+            className="w-20 h-20 md:w-28 md:h-28 rounded-2xl overflow-hidden bg-slate-800/80 flex-shrink-0 border border-white/10 hover:border-violet-500/50 flex items-center justify-center shadow-lg cursor-pointer transition-all hover:scale-105 active:scale-95 group relative"
+            title="Inspect Developer Dossier"
+          >
+            <LucideIcons.User size={44} className="text-slate-400 group-hover:text-violet-400 transition-colors" />
+            <div className="absolute bottom-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <LucideIcons.Sparkles size={12} className="text-violet-400" />
+            </div>
           </div>
           <div className="space-y-1.5">
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">{profileData.name}</h1>
@@ -106,10 +115,14 @@ export default function AboutApp() {
 
         {/* Contact & Social Links */}
         <div className="p-5 md:p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md flex flex-wrap gap-4 items-center justify-between">
-          <div className="text-xs md:text-sm font-medium text-slate-300 flex items-center gap-2">
+          <button
+            onClick={openDevModal}
+            className="text-xs md:text-sm font-medium text-slate-300 hover:text-violet-300 flex items-center gap-2 bg-transparent border-none cursor-pointer transition-colors p-0"
+            title="Open Developer Dossier"
+          >
             <LucideIcons.Terminal size={16} className="text-violet-400" />
             VNX.OS Developer Profile
-          </div>
+          </button>
           <div className="flex items-center gap-4">
             {activeSocialLinks.map((link, idx) => (
               <a

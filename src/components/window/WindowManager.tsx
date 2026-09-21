@@ -19,6 +19,10 @@ import GitHubApp from '../apps/GitHubApp';
 import LinkedInApp from '../apps/LinkedInApp';
 import TerminalView from '../apps/terminal/TerminalView';
 import SettingsApp from '../apps/SettingsApp';
+import GamesHub from '../apps/games/GamesHub';
+import SnakeApp from '../apps/games/SnakeApp';
+import TicTacToeApp from '../apps/games/TicTacToeApp';
+import FlappyBirdApp from '../apps/games/FlappyBirdApp';
 
 // Map of appId -> component to render inside the window
 function AppContent({ win }: { win: AppWindow }) {
@@ -57,6 +61,14 @@ function AppContent({ win }: { win: AppWindow }) {
       return <LinkedInApp />;
     case 'settings':
       return <SettingsApp />;
+    case 'games':
+      return <GamesHub window={win} />;
+    case 'snake':
+      return <SnakeApp window={win} />;
+    case 'tictactoe':
+      return <TicTacToeApp window={win} />;
+    case 'flappy':
+      return <FlappyBirdApp window={win} />;
     default:
       return null; // Falls through to the "Coming Soon" placeholder in WindowFrame
   }
@@ -93,6 +105,7 @@ function WindowFrame({ win, children }: WindowFrameProps) {
   const snapOn = windowSettings.snap;
 
   const [snapPreview, setSnapPreview] = useState<WindowSnapState>('none');
+  const [trafficHovered, setTrafficHovered] = useState(false);
   const dragRef = React.useRef<{ startX: number; startY: number; winX: number; winY: number } | null>(null);
   const resizeRef = React.useRef<{ startX: number; startY: number; winX: number; winY: number; winW: number; winH: number; dir: string } | null>(null);
 
@@ -265,17 +278,18 @@ function WindowFrame({ win, children }: WindowFrameProps) {
         style={{
           position: 'fixed',
           zIndex: win.zIndex,
-          background: 'rgba(10, 10, 20, 0.92)',
+          background: 'rgba(10, 10, 20, 0.94)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           border: win.isFocused
-            ? '1px solid rgba(139, 92, 246, 0.3)'
+            ? '1px solid rgba(167, 139, 250, 0.35)'
             : '1px solid rgba(255,255,255,0.07)',
           borderRadius: isMaximized ? 0 : 10,
           overflow: 'hidden',
           boxShadow: win.isFocused
-            ? '0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(139,92,246,0.15)'
-            : '0 10px 40px rgba(0,0,0,0.5)',
+            ? '0 24px 70px rgba(0,0,0,0.8), 0 0 0 1px rgba(167,139,250,0.18)'
+            : '0 10px 36px rgba(0,0,0,0.48)',
+          transition: 'box-shadow 0.18s ease, border-color 0.18s ease',
           display: 'flex',
           flexDirection: 'column',
         }}
@@ -293,42 +307,119 @@ function WindowFrame({ win, children }: WindowFrameProps) {
             padding: '0 12px',
             gap: 8,
             background: win.isFocused
-              ? 'rgba(139,92,246,0.08)'
-              : 'rgba(255,255,255,0.03)',
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
+              ? 'linear-gradient(180deg, rgba(167,139,250,0.09) 0%, rgba(139,92,246,0.03) 100%)'
+              : 'rgba(255,255,255,0.02)',
+            borderBottom: win.isFocused
+              ? '1px solid rgba(167,139,250,0.18)'
+              : '1px solid rgba(255,255,255,0.05)',
             cursor: isMaximized ? 'default' : 'grab',
             userSelect: 'none',
             flexShrink: 0,
+            transition: 'background 0.18s ease, border-color 0.18s ease',
           }}
         >
           {/* Traffic lights */}
-          <div style={{ display: 'flex', gap: 6 }}>
+          <div
+            onMouseEnter={() => setTrafficHovered(true)}
+            onMouseLeave={() => setTrafficHovered(false)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 7,
+              opacity: win.isFocused ? 1 : 0.6,
+              filter: win.isFocused ? 'none' : 'grayscale(35%)',
+              transition: 'opacity 0.15s ease, filter 0.15s ease',
+            }}
+          >
             <button
               onMouseDown={(e) => e.stopPropagation()}
               onClick={() => closeWindow(win.id)}
-              style={{ width: 12, height: 12, borderRadius: '50%', background: '#ff5f57', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: '50%',
+                background: '#ff5f57',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 0,
+                color: 'rgba(74, 4, 4, 0.9)',
+                fontWeight: 700,
+                fontSize: 8,
+                lineHeight: 1,
+                boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.3)',
+              }}
               title="Close"
-            />
+              aria-label="Close window"
+            >
+              {trafficHovered && '×'}
+            </button>
             <button
               onMouseDown={(e) => e.stopPropagation()}
               onClick={() => minimizeWindow(win.id)}
-              style={{ width: 12, height: 12, borderRadius: '50%', background: '#ffbd2e', border: 'none', cursor: 'pointer' }}
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: '50%',
+                background: '#ffbd2e',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 0,
+                color: 'rgba(92, 54, 3, 0.9)',
+                fontWeight: 700,
+                fontSize: 8,
+                lineHeight: 1,
+                boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.3)',
+              }}
               title="Minimize"
-            />
+              aria-label="Minimize window"
+            >
+              {trafficHovered && '−'}
+            </button>
             <button
               onMouseDown={(e) => e.stopPropagation()}
               onClick={() => isMaximized ? restoreWindow(win.id) : maximizeWindow(win.id)}
-              style={{ width: 12, height: 12, borderRadius: '50%', background: '#28c840', border: 'none', cursor: 'pointer' }}
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: '50%',
+                background: '#28c840',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 0,
+                color: 'rgba(8, 62, 16, 0.9)',
+                fontWeight: 700,
+                fontSize: 7,
+                lineHeight: 1,
+                boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.3)',
+              }}
               title={isMaximized ? 'Restore' : 'Maximize'}
-            />
+              aria-label={isMaximized ? 'Restore window' : 'Maximize window'}
+            >
+              {trafficHovered && (isMaximized ? '⤡' : '+')}
+            </button>
           </div>
 
           {/* Window title */}
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-            <span style={{ color: 'rgba(148,163,184,0.6)' }}>
+            <span style={{ color: win.isFocused ? '#a78bfa' : 'rgba(148,163,184,0.4)', transition: 'color 0.18s ease' }}>
               <LucideIcon name={win.icon} size={13} />
             </span>
-            <span style={{ fontSize: 12.5, color: win.isFocused ? 'rgba(226,232,240,0.9)' : 'rgba(148,163,184,0.5)', fontWeight: 500, letterSpacing: '0.01em' }}>
+            <span style={{
+              fontSize: 12.5,
+              color: win.isFocused ? 'rgba(241,245,249,0.95)' : 'rgba(148,163,184,0.45)',
+              fontWeight: win.isFocused ? 600 : 500,
+              letterSpacing: '0.01em',
+              transition: 'color 0.18s ease',
+            }}>
               {win.title}
             </span>
           </div>

@@ -27,6 +27,10 @@ const APP_CATEGORIES: Record<string, string> = {
   notes: 'Utilities',
   resources: 'Utilities',
   'ai-tools': 'Utilities',
+  games: 'Games',
+  snake: 'Games',
+  tictactoe: 'Games',
+  flappy: 'Games',
 };
 
 const APP_ICON_COLORS: Record<string, string> = {
@@ -47,9 +51,13 @@ const APP_ICON_COLORS: Record<string, string> = {
   powershell: '#38bdf8',
   settings: '#94a3b8',
   trash: '#9ca3af',
+  games: '#a855f7',
+  snake: '#34d399',
+  tictactoe: '#f43f5e',
+  flappy: '#fbbf24',
 };
 
-const CATEGORY_ORDER = ['Portfolio', 'System', 'Utilities'];
+const CATEGORY_ORDER = ['Portfolio', 'Games', 'System', 'Utilities'];
 
 function LucideIcon({ name, size = 24 }: { name: string; size?: number }) {
   const Icons = LucideIcons as unknown as Record<string, React.ComponentType<{ size?: number }>>;
@@ -227,18 +235,17 @@ export default function AppLauncher() {
       {isOpen && (
         <motion.div
           ref={ref}
-          initial={{ opacity: 0, scale: 0.94, y: -8 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.94, y: -8 }}
+          initial={{ opacity: 0, scale: 0.94, y: -8, x: '-50%' }}
+          animate={{ opacity: 1, scale: 1, y: 0, x: '-50%' }}
+          exit={{ opacity: 0, scale: 0.94, y: -8, x: '-50%' }}
           transition={{ type: 'spring', stiffness: 400, damping: 30 }}
           style={{
             position: 'fixed',
             top: '36px',
             left: '50%',
-            transform: 'translateX(-50%)',
             width: '480px',
             maxHeight: 'calc(100vh - 80px)',
-            zIndex: 60,
+            zIndex: 9600,
             background: 'rgba(10, 10, 22, 0.92)',
             backdropFilter: 'blur(28px)',
             WebkitBackdropFilter: 'blur(28px)',

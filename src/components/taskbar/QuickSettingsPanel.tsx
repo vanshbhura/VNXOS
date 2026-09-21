@@ -46,7 +46,7 @@ export default function QuickSettingsPanel() {
       exit={{ opacity: 0, scale: 0.95, y: -6 }}
       transition={{ type: 'spring', stiffness: 420, damping: 32 }}
       style={{
-        position: 'fixed', top: 34, right: 8, width: 280, zIndex: 200,
+        position: 'fixed', top: 34, right: 8, width: 280, zIndex: 9500,
         background: 'rgba(10,10,22,0.92)',
         backdropFilter: 'blur(28px)', WebkitBackdropFilter: 'blur(28px)',
         border: '1px solid rgba(255,255,255,0.08)',

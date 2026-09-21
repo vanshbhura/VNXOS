@@ -174,4 +174,21 @@ export const certificatesData: Certificate[] = [
     ],
     assetPath: '/assets/certificates/abhivyakti-2025-beat-bunch.png',
   },
+  {
+    id: 'innovation-ambassador-foundation-advanced',
+    name: 'Innovation Ambassador (IA) — Foundation & Advanced Level',
+    issuer: "MoE's Innovation Cell (MIC) • AICTE, Ministry of Education, Govt. of India",
+    date: 'July 27–29, 2026',
+    credentialId: 'IA/Foundation/1110222 & IA/Advanced/1110222',
+    description: "Successfully underwent Innovation Ambassador (IA) training for both 'Foundation Level' (16 sessions, 30 contact hours) and 'Advanced Level' (16 sessions, 30 contact hours) conducted online by MoE's Innovation Cell & AICTE during the IIC calendar year 2025–26.",
+    skills: [
+      'Innovation Management',
+      'Design Thinking',
+      'Entrepreneurship',
+      'Technology Transfer',
+      'Intellectual Property',
+      'Leadership',
+    ],
+    assetPath: '/assets/certificates/innovation-ambassador.png',
+  },
 ];

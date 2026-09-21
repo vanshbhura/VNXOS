@@ -6,6 +6,10 @@ import { projectsData } from '../data/projects';
 import { skillsData } from '../data/skills';
 import { experienceData } from '../data/experience';
 import { certificatesData } from '../data/certificates';
+import MatrixRain from '../features/easter-eggs/MatrixRain';
+import { useEasterEggStore } from '../features/easter-eggs/easterEggStore';
+import { useOSStore } from '../store/osStore';
+import { getApp } from '../data/apps';
 
 export const coreCommands = {
   clear: {
@@ -245,12 +249,12 @@ export const coreCommands = {
 
   whoami: {
     name: 'whoami',
-    description: 'Print current user identity',
+    description: 'Print current user and developer identity',
     execute: (_args: string[], ctx: CommandContext): CommandResult => {
       if (ctx.shellType === 'cmd' || ctx.shellType === 'powershell') {
-        return { output: 'vnxos\\vansh' };
+        return { output: 'vnxos\\vansh (Vansh Bhura — AI/ML Engineer & Systems Developer)' };
       }
-      return { output: 'vansh' };
+      return { output: 'vansh — AI/ML Engineer & Systems Developer (NIMS University B.Tech AIML)' };
     },
   },
 
@@ -431,8 +435,14 @@ export const coreCommands = {
   neofetch: {
     name: 'neofetch',
     description: 'Display system architecture summary and logo',
-    execute: (): CommandResult => {
-      const specs = getSystemInfoLines();
+    execute: (_args: string[], ctx: CommandContext): CommandResult => {
+      const shellName =
+        ctx.shellType === 'cmd'
+          ? 'Command Prompt'
+          : ctx.shellType === 'powershell'
+          ? 'PowerShell'
+          : 'VNX Shell';
+      const specs = getSystemInfoLines(shellName);
       return {
         output: (
           <div className="flex flex-col md:flex-row gap-6 items-start font-mono text-xs">
@@ -510,6 +520,196 @@ export const coreCommands = {
           </div>
         ),
       };
+    },
+  },
+
+  uname: {
+    name: 'uname',
+    description: 'Print simulated kernel information',
+    execute: (args: string[]): CommandResult => {
+      const flag = args[0]?.toLowerCase();
+      if (flag === '-s') return { output: 'VNXOS' };
+      if (flag === '-r') return { output: '6.0.2026-simulated-web' };
+      if (flag === '-m') return { output: 'x86_64' };
+      if (flag === '-o') return { output: 'GNU/VNX' };
+      return {
+        output: 'VNXOS vnxos 6.0.2026-simulated-web #1 SMP PREEMPT 2026 x86_64 WebAssembly/React GNU/VNX',
+      };
+    },
+  },
+
+  fortune: {
+    name: 'fortune',
+    description: 'Display a random short developer quote',
+    execute: (): CommandResult => {
+      const quotes = [
+        '“There are only two hard things in Computer Science: cache invalidation and naming things.” — Phil Karlton',
+        '“Simplicity is prerequisite for reliability.” — Edsger W. Dijkstra',
+        '“First, solve the problem. Then, write the code.” — John Johnson',
+        '“Any fool can write code that a computer can understand. Good programmers write code that humans can understand.” — Martin Fowler',
+        '“Experience is the name everyone gives to their mistakes.” — Oscar Wilde',
+        '“It’s not a bug – it’s an undocumented feature.”',
+        '“Code is like humor. When you have to explain it, it’s bad.” — Cory House',
+        '“The best error message is the one that never shows up.”',
+        '“Make it work, make it right, make it fast.” — Kent Beck',
+        '“Ideas > Code > Impact.” — VNX.OS Philosophy',
+      ];
+      const selected = quotes[Math.floor(Math.random() * quotes.length)];
+      return {
+        output: <div className="text-violet-300 italic font-mono text-xs py-1">🔮 {selected}</div>,
+      };
+    },
+  },
+
+  coffee: {
+    name: 'coffee',
+    description: 'Brew simulated developer fuel',
+    execute: (): CommandResult => {
+      return {
+        output: (
+          <div className="space-y-1 font-mono text-xs text-amber-300 py-1">
+            <div>☕ Brewing a fresh cup of dark roast...</div>
+            <div className="text-slate-300">Developer stamina restored to 100%.</div>
+            <div className="text-slate-500 text-[11px]">[HTTP 418: I&apos;m a teapot, but I served coffee anyway.]</div>
+          </div>
+        ),
+      };
+    },
+  },
+
+  vnx: {
+    name: 'vnx',
+    description: 'Display VNX.OS banner and identity',
+    execute: (): CommandResult => {
+      return {
+        output: (
+          <div className="space-y-1.5 font-mono text-xs py-1">
+            <pre className="text-violet-400 font-bold text-[11px] leading-tight select-none">
+{` __     ___   ___  __   ___  ____  
+ \\ \\   / / \\ | \\ \\/ /  / _ \\/ ___| 
+  \\ \\ / /|  \\| |\\  /  | | | \\___ \\ 
+   \\ V / | |\\  |/  \\  | |_| |___) |
+    \\_/  |_| \\_/_/\\_\\  \\___/|____/ `}
+            </pre>
+            <div className="text-white font-bold">VNX.OS v6.0 — Web Operating System &amp; Developer Workspace</div>
+            <div className="text-sky-300">Philosophy: IDEAS &gt; CODE &gt; IMPACT</div>
+            <div className="text-slate-400">Architect: Vansh Bhura (AI/ML Engineer)</div>
+            <div className="text-slate-500 text-[11px]">Stack: React + TypeScript + Framer Motion on Vite</div>
+          </div>
+        ),
+      };
+    },
+  },
+
+  matrix: {
+    name: 'matrix',
+    description: 'Trigger terminal falling code visual effect',
+    execute: (): CommandResult => {
+      return {
+        output: (
+          <div className="py-2">
+            <MatrixRain height={280} />
+          </div>
+        ),
+      };
+    },
+  },
+
+  sudo: {
+    name: 'sudo',
+    description: 'Execute a command with simulated root privileges',
+    execute: (args: string[]): CommandResult => {
+      const targetCmd = args.join(' ');
+      return {
+        output: (
+          <div className="space-y-1 font-mono text-xs text-rose-400 py-1">
+            <div>[sudo] password for vansh: ••••••••</div>
+            <div>vansh is not in the sudoers file. This incident will be reported to the virtual kernel administrator.</div>
+            {targetCmd && <div className="text-slate-500 text-[11px]">Attempted command: {targetCmd}</div>}
+          </div>
+        ),
+      };
+    },
+  },
+
+  devmode: {
+    name: 'devmode',
+    description: 'Toggle Developer Mode HUD overlay',
+    execute: (): CommandResult => {
+      useEasterEggStore.getState().toggleDevModeOverlay();
+      return {
+        output: <div className="text-sky-400 font-mono text-xs">Developer Mode HUD toggled. Press Esc or Alt+D to exit.</div>,
+      };
+    },
+  },
+
+  developer: {
+    name: 'developer',
+    description: 'Open the classified Developer Dossier',
+    execute: (): CommandResult => {
+      useEasterEggStore.getState().openDevModal();
+      return {
+        output: <div className="text-violet-400 font-mono text-xs">Developer Dossier unlocked.</div>,
+      };
+    },
+  },
+
+  games: {
+    name: 'games',
+    description: 'Launch VNX.OS Games Center (or games snake|tictactoe|flappy)',
+    aliases: ['arcade', 'play'],
+    execute: (args: string[]): CommandResult => {
+      const sub = (args[0] || '').toLowerCase();
+      if (sub === 'snake') {
+        const app = getApp('snake');
+        if (app) useOSStore.getState().openWindow(app);
+        return { output: 'Launching Snake...' };
+      }
+      if (sub === 'tictactoe' || sub === 'ttt') {
+        const app = getApp('tictactoe');
+        if (app) useOSStore.getState().openWindow(app);
+        return { output: 'Launching Impossible Tic Tac Toe...' };
+      }
+      if (sub === 'flappy' || sub === 'bird') {
+        const app = getApp('flappy');
+        if (app) useOSStore.getState().openWindow(app);
+        return { output: 'Launching Flappy Bird...' };
+      }
+      const app = getApp('games');
+      if (app) useOSStore.getState().openWindow(app);
+      return { output: 'Launching VNX.OS Games Center...' };
+    },
+  },
+
+  snake: {
+    name: 'snake',
+    description: 'Launch Snake arcade game',
+    execute: (): CommandResult => {
+      const app = getApp('snake');
+      if (app) useOSStore.getState().openWindow(app);
+      return { output: 'Launching Snake...' };
+    },
+  },
+
+  tictactoe: {
+    name: 'tictactoe',
+    description: 'Launch Impossible Tic Tac Toe (Minimax)',
+    aliases: ['ttt'],
+    execute: (): CommandResult => {
+      const app = getApp('tictactoe');
+      if (app) useOSStore.getState().openWindow(app);
+      return { output: 'Launching Impossible Tic Tac Toe...' };
+    },
+  },
+
+  flappy: {
+    name: 'flappy',
+    description: 'Launch Flappy Bird',
+    aliases: ['flappybird'],
+    execute: (): CommandResult => {
+      const app = getApp('flappy');
+      if (app) useOSStore.getState().openWindow(app);
+      return { output: 'Launching Flappy Bird...' };
     },
   },
 

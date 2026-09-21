@@ -63,66 +63,66 @@ export default function CertificatesApp() {
                 key={cert.id}
                 className="flex flex-col md:flex-row bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-emerald-500/30 transition-colors"
               >
-                {/* Image Left */}
-                <div className="w-full md:w-56 h-40 md:h-auto bg-slate-900 border-b md:border-b-0 md:border-r border-white/10 flex-shrink-0 flex items-center justify-center overflow-hidden p-4">
+                {/* Certificate Image (Left) */}
+                <div className="w-full md:w-60 h-44 md:h-auto bg-slate-900/80 border-b md:border-b-0 md:border-r border-white/10 flex-shrink-0 flex items-center justify-center overflow-hidden p-4">
                   <CertPreview src={cert.assetPath} alt={cert.name} />
                 </div>
 
-                {/* Information Center */}
-                <div className="flex-1 p-5 md:p-6 flex flex-col justify-center">
-                  <h2 className="text-lg md:text-xl font-semibold text-white mb-1">{cert.name}</h2>
-                  <div className="flex items-center gap-2 text-xs md:text-sm mb-3">
-                    <span className="font-medium text-emerald-400">{cert.issuer}</span>
-                    <span className="text-slate-600">•</span>
-                    <span className="text-slate-400">{cert.date}</span>
-                    {cert.credentialId && (
-                      <>
-                        <span className="text-slate-600">•</span>
-                        <span className="text-slate-500 font-mono text-xs">ID: {cert.credentialId}</span>
-                      </>
-                    )}
-                  </div>
-                  
-                  <p className="text-xs md:text-sm text-slate-300 mb-3 max-w-xl leading-relaxed">{cert.description}</p>
-                  
-                  {cert.skills && cert.skills.length > 0 && (
-                    <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
-                      <span>Skills:</span>
-                      <div className="flex flex-wrap gap-1.5">
+                {/* Certificate Information (Right) */}
+                <div className="flex-1 p-5 md:p-6 flex flex-col justify-between">
+                  <div>
+                    <h2 className="text-lg md:text-xl font-semibold text-white mb-1">{cert.name}</h2>
+                    <div className="flex flex-wrap items-center gap-2 text-xs md:text-sm mb-3">
+                      <span className="font-medium text-emerald-400">{cert.issuer}</span>
+                      <span className="text-slate-600">•</span>
+                      <span className="text-slate-400">{cert.date}</span>
+                      {cert.credentialId && (
+                        <>
+                          <span className="text-slate-600">•</span>
+                          <span className="text-slate-500 font-mono text-xs">ID: {cert.credentialId}</span>
+                        </>
+                      )}
+                    </div>
+                    
+                    <p className="text-xs md:text-sm text-slate-300 mb-4 leading-relaxed">{cert.description}</p>
+                    
+                    {cert.skills && cert.skills.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-1.5 mb-4">
+                        <span className="text-xs font-medium text-slate-400 mr-1">Skills:</span>
                         {cert.skills.map((skill, idx) => (
                           <span key={idx} className="text-xs text-slate-300 bg-white/5 px-2 py-0.5 rounded border border-white/10">
                             {skill}
                           </span>
                         ))}
                       </div>
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
 
-                {/* Credential Action Right */}
-                <div className="p-5 md:p-6 bg-slate-900/30 border-t md:border-t-0 md:border-l border-white/5 flex flex-col justify-center items-center md:items-end gap-2.5 min-w-[180px]">
-                  {cert.credentialUrl && (
-                    <a
-                      href={cert.credentialUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs md:text-sm font-medium transition-colors border border-emerald-500 w-full justify-center"
-                    >
-                      <ExternalLink size={14} />
-                      View Credential
-                    </a>
-                  )}
-                  {(cert.certificatePdf || cert.assetPath) && (
-                    <a
-                      href={cert.certificatePdf || cert.assetPath}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs md:text-sm font-medium transition-colors border border-slate-700 w-full justify-center"
-                    >
-                      <FileText size={14} />
-                      View Certificate
-                    </a>
-                  )}
+                  {/* Actions */}
+                  <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-white/5 mt-auto">
+                    {(cert.certificatePdf || cert.assetPath) && (
+                      <a
+                        href={cert.certificatePdf || cert.assetPath}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600/90 hover:bg-emerald-500 text-white text-xs md:text-sm font-medium transition-colors border border-emerald-500/50"
+                      >
+                        <FileText size={14} />
+                        View Certificate
+                      </a>
+                    )}
+                    {cert.credentialUrl && (
+                      <a
+                        href={cert.credentialUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs md:text-sm font-medium transition-colors border border-slate-700"
+                      >
+                        <ExternalLink size={14} />
+                        View Credential
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

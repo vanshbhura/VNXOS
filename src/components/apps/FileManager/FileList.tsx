@@ -84,7 +84,7 @@ export default function FileList({ items, selectedIds, setSelectedIds, sortField
             >
               <div className="flex items-center gap-3 truncate">
                 <div className="scale-50 -ml-3 -my-3">{getIconForNode(node)}</div>
-                <span className="truncate text-slate-200">{node.name}</span>
+                <span className="truncate text-slate-200" title={node.name}>{node.name}</span>
               </div>
               <div className="text-slate-400 truncate">{formatDate(node.modifiedDate)}</div>
               <div className="text-slate-400 truncate capitalize">

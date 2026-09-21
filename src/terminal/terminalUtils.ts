@@ -78,15 +78,16 @@ export const NEOFETCH_ASCII = `
     ██║ ╚████║ ╚████╔╝ ██╔╝ ██╗╚██████╔╝███████║
     ╚═╝  ╚═══╝  ╚═══╝  ╚═╝  ╚═╝ ╚═════╝ ╚══════╝`;
 
-export function getSystemInfoLines(): Array<{ label: string; value: string }> {
+export function getSystemInfoLines(shellName?: string): Array<{ label: string; value: string }> {
   return [
-    { label: 'OS', value: 'VNX.OS (Web Desktop Simulator)' },
-    { label: 'Host', value: 'Antigravity IDE Browser Runtime' },
-    { label: 'Kernel', value: 'VNX React Virtual Kernel 6.0' },
-    { label: 'Uptime', value: 'Client Session Active' },
-    { label: 'Shell', value: 'VNX Simulated Shell Engine' },
-    { label: 'Theme', value: 'Dark Linux / GNOME' },
-    { label: 'Architecture', value: 'Web (TypeScript / Vite)' },
+    { label: 'OS', value: 'VNX.OS' },
+    { label: 'Kernel', value: 'simulated (React 18 / Vite)' },
+    { label: 'Shell', value: shellName || 'VNX Shell' },
+    { label: 'Desktop', value: 'VNX Desktop' },
     { label: 'Developer', value: 'Vansh Bhura' },
+    { label: 'Stack', value: 'React / TypeScript / Vite / Framer Motion' },
+    { label: 'Theme', value: 'Dark Linux / GNOME' },
+    { label: 'Architecture', value: 'WebAssembly / x86_64' },
   ];
 }
+

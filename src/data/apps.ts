@@ -142,6 +142,38 @@ export const appRegistry: AppDefinition[] = [
     defaultSize: { width: 800, height: 640 },
     minSize: { width: 500, height: 600 },
   },
+  {
+    id: 'games',
+    name: 'Games',
+    icon: 'Gamepad2',
+    description: 'VNX.OS Games Center',
+    defaultSize: { width: 780, height: 540 },
+    minSize: { width: 560, height: 420 },
+  },
+  {
+    id: 'snake',
+    name: 'Snake',
+    icon: 'Play',
+    description: 'Classic grid arcade game',
+    defaultSize: { width: 520, height: 600 },
+    minSize: { width: 400, height: 480 },
+  },
+  {
+    id: 'tictactoe',
+    name: 'Impossible Tic Tac Toe',
+    icon: 'ShieldAlert',
+    description: 'Unbeatable Minimax Tic Tac Toe',
+    defaultSize: { width: 480, height: 540 },
+    minSize: { width: 380, height: 440 },
+  },
+  {
+    id: 'flappy',
+    name: 'Flappy Bird',
+    icon: 'Sparkles',
+    description: 'Cyber glider physics run',
+    defaultSize: { width: 480, height: 620 },
+    minSize: { width: 380, height: 480 },
+  },
 ];
 
 export function getApp(id: string): AppDefinition | undefined {

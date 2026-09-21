@@ -15,6 +15,11 @@ import { useOSStore } from './store/osStore';
 import { useSettingsStore } from './store/settingsStore';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import ErrorBoundary from './components/ErrorBoundary';
+import { useKonamiCode } from './features/easter-eggs/useKonamiCode';
+import KonamiDesktopEffect from './features/easter-eggs/KonamiDesktopEffect';
+import DeveloperSecretModal from './features/easter-eggs/DeveloperSecretModal';
+import DevModeOverlay from './features/easter-eggs/DevModeOverlay';
+import NotificationToast from './features/easter-eggs/NotificationToast';
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
@@ -32,6 +37,7 @@ export default function App() {
   const theme = useSettingsStore((s) => s.theme);
   const isMobile = useIsMobile();
   useKeyboardShortcuts();
+  useKonamiCode();
 
   const handleBootComplete = useCallback(() => {
     setBootComplete(true);
@@ -96,6 +102,10 @@ export default function App() {
           <ErrorBoundary label="Power Overlays">
             <PowerOverlays />
           </ErrorBoundary>
+          <KonamiDesktopEffect />
+          <DeveloperSecretModal />
+          <DevModeOverlay />
+          <NotificationToast />
         </motion.div>
       )}
     </div>

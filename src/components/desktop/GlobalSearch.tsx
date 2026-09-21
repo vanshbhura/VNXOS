@@ -171,7 +171,7 @@ export default function GlobalSearch() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
             style={{
-              position: 'fixed', inset: 0, zIndex: 300,
+              position: 'fixed', inset: 0, zIndex: 9700,
               background: 'rgba(0,0,0,0.5)',
               backdropFilter: 'blur(4px)',
             }}
@@ -180,13 +180,13 @@ export default function GlobalSearch() {
 
           {/* Search box */}
           <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.97 }}
+            initial={{ opacity: 0, y: -20, scale: 0.97, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, scale: 1, x: '-50%' }}
+            exit={{ opacity: 0, y: -20, scale: 0.97, x: '-50%' }}
             transition={{ type: 'spring', stiffness: 450, damping: 35 }}
             style={{
-              position: 'fixed', top: '15%', left: '50%', transform: 'translateX(-50%)',
-              width: 560, zIndex: 301,
+              position: 'fixed', top: '15%', left: '50%',
+              width: 560, maxWidth: 'calc(100vw - 32px)', zIndex: 9701,
               background: 'rgba(10,10,22,0.95)',
               backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)',
               border: '1px solid rgba(139,92,246,0.3)',

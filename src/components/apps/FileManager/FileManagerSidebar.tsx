@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Monitor, FolderOpen, FileText, Download, Award, Trash2 } from 'lucide-react';
+import { Home, Monitor, FolderOpen, Gamepad2, FileText, Download, Award, Trash2 } from 'lucide-react';
 
 interface FileManagerSidebarProps {
   currentPath: string;
@@ -10,6 +10,7 @@ const SIDEBAR_LINKS = [
   { label: 'Home', path: '/home/vansh', icon: Home },
   { label: 'Desktop', path: '/home/vansh/Desktop', icon: Monitor },
   { label: 'Projects', path: '/home/vansh/Projects', icon: FolderOpen },
+  { label: 'Games', path: '/home/vansh/Games', icon: Gamepad2 },
   { label: 'Documents', path: '/home/vansh/Documents', icon: FileText },
   { label: 'Downloads', path: '/home/vansh/Downloads', icon: Download },
   { label: 'Certificates', path: '/home/vansh/Certificates', icon: Award },

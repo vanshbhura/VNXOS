@@ -7,6 +7,7 @@ import { getWallpaper } from '../../data/wallpapers';
 import DesktopIcon from '../icons/DesktopIcon';
 import type { ContextMenuItem } from '../../types/os';
 import { getApp } from '../../data/apps';
+import { useEasterEggStore } from '../../features/easter-eggs/easterEggStore';
 
 
 // Subtle star particles
@@ -142,10 +143,6 @@ export default function Desktop() {
     );
   }, [nodes, showHidden, desktopNode]);
 
-  // Icon size scale
-  const iconScale = desktopIconSettings.size === 'small' ? 0.75
-    : desktopIconSettings.size === 'large' ? 1.3
-    : 1.0;
 
   const handleDesktopClick = React.useCallback(() => {
     selectIcon(null);
@@ -231,10 +228,38 @@ export default function Desktop() {
           refreshDesktop();
         },
       },
+      {
+        id: 'developer-notes',
+        label: 'Developer Notes',
+        icon: 'Sparkles',
+        separator: true,
+        action: () => {
+          useEasterEggStore.getState().openDevModal();
+        },
+      },
     ];
 
     showContextMenu(e.clientX, e.clientY, items);
   }, [showContextMenu, selectIcon, openWin, openSearch, desktopNode, createFolder, refreshDesktop]);
+
+  const desktopRippleActive = useEasterEggStore((s) => s.desktopRippleActive);
+  const watermarkClicksRef = React.useRef<{ count: number; lastTime: number }>({ count: 0, lastTime: 0 });
+
+  const handleWatermarkClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const now = Date.now();
+    if (now - watermarkClicksRef.current.lastTime > 2000) {
+      watermarkClicksRef.current.count = 1;
+    } else {
+      watermarkClicksRef.current.count += 1;
+    }
+    watermarkClicksRef.current.lastTime = now;
+
+    if (watermarkClicksRef.current.count >= 3) {
+      watermarkClicksRef.current.count = 0;
+      useEasterEggStore.getState().triggerDesktopSecret();
+    }
+  };
 
   const wallpaperStyle: React.CSSProperties = { position: 'absolute', inset: 0, background: wallpaperPreset.background };
 
@@ -253,23 +278,53 @@ export default function Desktop() {
       <AmbientGlow />
       <MountainSilhouette />
 
+      {/* Subtle radial ripple on secret trigger */}
+      {desktopRippleActive && (
+        <motion.div
+          initial={{ opacity: 0.8, scale: 0.6 }}
+          animate={{ opacity: 0, scale: 2.2 }}
+          transition={{ duration: 1.8, ease: 'easeOut' }}
+          style={{
+            position: 'absolute',
+            top: '38%',
+            left: '50%',
+            width: 320,
+            height: 320,
+            marginLeft: -160,
+            marginTop: -160,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(167, 139, 250, 0.25) 0%, transparent 70%)',
+            pointerEvents: 'none',
+          }}
+        />
+      )}
+
       {/* Center watermark */}
-      <div style={{
-        position: 'absolute', top: '38%', left: '50%',
-        transform: 'translate(-50%, -50%)',
-        textAlign: 'center', pointerEvents: 'none', userSelect: 'none',
-      }}>
+      <div
+        onClick={handleWatermarkClick}
+        style={{
+          position: 'absolute', top: '38%', left: '50%',
+          transform: 'translate(-50%, -50%)',
+          textAlign: 'center', pointerEvents: 'auto', userSelect: 'none',
+          cursor: 'default',
+        }}
+        title="VNX.OS"
+      >
         <div style={{
           fontSize: 'clamp(28px, 4vw, 56px)', fontWeight: 700,
-          letterSpacing: '0.25em', color: 'rgba(167,139,250,0.08)',
+          letterSpacing: '0.25em',
+          color: desktopRippleActive ? 'rgba(167,139,250,0.35)' : 'rgba(167,139,250,0.08)',
           fontFamily: "'Inter', system-ui, sans-serif", lineHeight: 1,
+          transition: 'color 0.4s ease',
         }}>
           VNX.OS
         </div>
         <div style={{
           marginTop: 8, fontSize: 'clamp(10px, 1.2vw, 14px)',
-          letterSpacing: '0.4em', color: 'rgba(148,163,184,0.05)',
+          letterSpacing: '0.4em',
+          color: desktopRippleActive ? 'rgba(148,163,184,0.3)' : 'rgba(148,163,184,0.05)',
           fontWeight: 300, textTransform: 'uppercase',
+          transition: 'color 0.4s ease',
         }}>
           IDEAS &gt; CODE &gt; IMPACT
         </div>
@@ -277,7 +332,7 @@ export default function Desktop() {
 
       {/* Desktop Icons — multi-column grid that stays inside the safe area */}
       {desktopIconSettings.visible && (
-        <DesktopIconGrid icons={icons} iconScale={iconScale} />
+        <DesktopIconGrid icons={icons} size={desktopIconSettings.size} />
       )}
     </motion.div>
   );
@@ -290,10 +345,9 @@ export default function Desktop() {
 const TOP_BAR_H = 28;       // fixed top bar height (px)
 const SAFE_TOP_PAD = 12;    // gap from top bar to first icon (px)
 const SAFE_LEFT_PAD = 12;   // gap from left edge to first column (px)
-const DOCK_CLEARANCE = 92;  // estimated bottom dock height + margin (px)
-const ICON_H = 98;          // icon box (44) + gap (6) + label (~18) + padding (2×8) ≈ 98px
-const COL_GAP = 4;          // horizontal gap between columns (px)
-const ROW_GAP = 2;          // vertical gap between rows (px, matches gap:4 in CSS)
+const DOCK_CLEARANCE = 96;  // bottom dock clearance + padding (px)
+const COL_GAP = 6;          // horizontal gap between columns (px)
+const ROW_GAP = 4;          // vertical gap between rows (px)
 
 function useViewport() {
   const [size, setSize] = React.useState({
@@ -310,17 +364,20 @@ function useViewport() {
 
 interface IconGridProps {
   icons: import('../../types/fs').FileSystemNode[];
-  iconScale: number;
+  size: 'small' | 'medium' | 'large';
 }
 
-function DesktopIconGrid({ icons, iconScale }: IconGridProps) {
+function DesktopIconGrid({ icons, size }: IconGridProps) {
   const { h } = useViewport();
 
+  // Item height based on size setting
+  const itemH = size === 'small' ? 76 : size === 'large' ? 100 : 86;
+
   // Safe vertical area available for icons (between topbar and dock)
-  const safeH = h - TOP_BAR_H - SAFE_TOP_PAD - DOCK_CLEARANCE;
+  const safeH = Math.max(100, h - (TOP_BAR_H + SAFE_TOP_PAD) - DOCK_CLEARANCE);
 
   // How many icons fit in one column at this viewport height
-  const iconsPerCol = Math.max(1, Math.floor(safeH / (ICON_H * iconScale + ROW_GAP)));
+  const iconsPerCol = Math.max(1, Math.floor(safeH / (itemH + ROW_GAP)));
 
   // Split icons into columns
   const columns: (typeof icons)[] = [];
@@ -332,12 +389,13 @@ function DesktopIconGrid({ icons, iconScale }: IconGridProps) {
     <div
       style={{
         position: 'absolute',
-        top: SAFE_TOP_PAD,
+        top: TOP_BAR_H + SAFE_TOP_PAD,
         left: SAFE_LEFT_PAD,
         display: 'flex',
         flexDirection: 'row',
         gap: COL_GAP,
         alignItems: 'flex-start',
+        zIndex: 5,
       }}
       onClick={(e) => e.stopPropagation()}
     >
@@ -348,12 +406,10 @@ function DesktopIconGrid({ icons, iconScale }: IconGridProps) {
             display: 'flex',
             flexDirection: 'column',
             gap: ROW_GAP,
-            transform: `scale(${iconScale})`,
-            transformOrigin: 'top left',
           }}
         >
           {col.map((icon) => (
-            <DesktopIcon key={icon.id} icon={icon} />
+            <DesktopIcon key={icon.id} icon={icon} size={size} />
           ))}
         </div>
       ))}

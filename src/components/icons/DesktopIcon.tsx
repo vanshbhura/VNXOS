@@ -8,9 +8,10 @@ import { GITHUB_PROFILE_URL, LINKEDIN_PROFILE_URL, openExternalLink } from '../.
 
 interface DesktopIconProps {
   icon: FileSystemNode;
+  size?: 'small' | 'medium' | 'large';
 }
 
-export default function DesktopIcon({ icon }: DesktopIconProps) {
+export default function DesktopIcon({ icon, size = 'medium' }: DesktopIconProps) {
   const selectedIconId = useOSStore((s) => s.selectedIconId);
   const selectIcon = useOSStore((s) => s.selectIcon);
   const openWindow = useOSStore((s) => s.openWindow);
@@ -49,6 +50,9 @@ export default function DesktopIcon({ icon }: DesktopIconProps) {
       'Command Prompt': 'cmd',
       'CMD': 'cmd',
       'PowerShell': 'powershell',
+      'Snake': 'snake',
+      'Impossible Tic Tac Toe': 'tictactoe',
+      'Flappy Bird': 'flappy',
     };
 
     const targetAppId = appMap[icon.name];
@@ -83,9 +87,15 @@ export default function DesktopIcon({ icon }: DesktopIconProps) {
     }
   };
 
+  const boxDim = size === 'small' ? 38 : size === 'large' ? 52 : 44;
+  const containerW = size === 'small' ? 70 : size === 'large' ? 92 : 80;
+  const iconInnerScale = size === 'small' ? 'scale-[0.52]' : size === 'large' ? 'scale-[0.72]' : 'scale-[0.6]';
+  const labelFont = size === 'small' ? 10.5 : size === 'large' ? 12 : 11;
+
   return (
     <motion.div
       className={`desktop-icon ${isSelected ? 'selected' : ''}`}
+      style={{ width: containerW }}
       onMouseDown={handleClick}
       onDoubleClick={handleDoubleClick}
       whileHover={{ scale: 1.04 }}
@@ -99,24 +109,32 @@ export default function DesktopIcon({ icon }: DesktopIconProps) {
       <div
         className="flex items-center justify-center"
         style={{
-          width: 44,
-          height: 44,
-          borderRadius: 10,
+          width: boxDim,
+          height: boxDim,
+          borderRadius: size === 'large' ? 12 : 10,
           background: isSelected
-            ? 'rgba(139, 92, 246, 0.2)'
-            : 'rgba(255,255,255,0.04)',
+            ? 'rgba(139, 92, 246, 0.25)'
+            : 'rgba(255,255,255,0.05)',
           border: isSelected
-            ? '1px solid rgba(139,92,246,0.4)'
-            : '1px solid rgba(255,255,255,0.06)',
+            ? '1px solid rgba(167, 139, 250, 0.5)'
+            : '1px solid rgba(255,255,255,0.07)',
+          boxShadow: isSelected
+            ? '0 0 14px rgba(139, 92, 246, 0.35)'
+            : '0 4px 12px rgba(0,0,0,0.25)',
           backdropFilter: 'blur(8px)',
           transition: 'all 0.15s ease',
         }}
       >
-        <div className="scale-[0.6] origin-center -m-1">
+        <div className={`${iconInnerScale} origin-center -m-1`}>
           {getIconForNode(icon)}
         </div>
       </div>
-      <span className="desktop-icon-label">{icon.name}</span>
+      <span
+        className="desktop-icon-label"
+        style={{ fontSize: labelFont, maxWidth: containerW - 8 }}
+      >
+        {icon.name}
+      </span>
     </motion.div>
   );
 }

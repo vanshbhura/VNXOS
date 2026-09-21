@@ -37,7 +37,7 @@ export default function ContextMenu() {
             position: 'fixed',
             top: y,
             left: x,
-            zIndex: 9000,
+            zIndex: 9999,
             minWidth: '200px',
             background: 'rgba(10, 10, 22, 0.92)',
             backdropFilter: 'blur(24px)',

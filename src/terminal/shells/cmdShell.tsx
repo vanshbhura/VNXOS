@@ -37,6 +37,12 @@ export const cmdShell: ShellDefinition = {
           ['PROJECTS', 'Lists portfolio projects'],
           ['SKILLS', 'Lists technical skills'],
           ['GITHUB', 'Displays GitHub repository links'],
+          ['VNX', 'Displays VNX.OS identity banner'],
+          ['NEOFETCH', 'Displays system hardware & software specs'],
+          ['COFFEE', 'Developer fuel'],
+          ['FORTUNE', 'Displays random developer quote'],
+          ['MATRIX', 'Triggers digital rain animation'],
+          ['DEVMODE', 'Toggles Developer Mode HUD overlay'],
           ['EXIT', 'Quits the CMD program'],
         ];
 
@@ -47,7 +53,7 @@ export const cmdShell: ShellDefinition = {
               <div className="space-y-0.5 pt-1">
                 {cmdList.map(([name, desc]) => (
                   <div key={name} className="flex">
-                    <span className="text-slate-100 w-24 font-bold flex-shrink-0">{name}</span>
+                    <span className="text-slate-100 w-28 font-bold flex-shrink-0">{name}</span>
                     <span className="text-slate-400">{desc}</span>
                   </div>
                 ))}
@@ -70,6 +76,14 @@ export const cmdShell: ShellDefinition = {
     github: coreCommands.github,
     projects: coreCommands.projects,
     skills: coreCommands.skills,
+    neofetch: coreCommands.neofetch,
+    vnx: coreCommands.vnx,
+    coffee: coreCommands.coffee,
+    fortune: coreCommands.fortune,
+    matrix: coreCommands.matrix,
+    sudo: coreCommands.sudo,
+    devmode: coreCommands.devmode,
+    developer: coreCommands.developer,
     exit: coreCommands.exit,
   },
 };

@@ -14,11 +14,24 @@ export function getIconForNode(node: FileSystemNode) {
   if (node.type === 'folder') {
     if (node.icon && Icons[node.icon as keyof typeof Icons]) {
        const Icon = Icons[node.icon as keyof typeof Icons] as React.ElementType;
-       return <Icon className="text-blue-400" size={48} strokeWidth={1} />;
+       return <Icon className={node.icon === 'Gamepad2' ? 'text-purple-400' : 'text-blue-400'} size={48} strokeWidth={1} />;
     }
     return <Icons.Folder className="text-blue-400" size={48} strokeWidth={1} fill="currentColor" fillOpacity={0.2} />;
   }
   
+  if (node.icon && Icons[node.icon as keyof typeof Icons]) {
+    const Icon = Icons[node.icon as keyof typeof Icons] as React.ElementType;
+    const colorClass =
+      node.icon === 'Play'
+        ? 'text-emerald-400'
+        : node.icon === 'ShieldAlert'
+        ? 'text-rose-400'
+        : node.icon === 'Sparkles'
+        ? 'text-amber-400'
+        : 'text-purple-400';
+    return <Icon className={colorClass} size={48} strokeWidth={1} />;
+  }
+
   if (node.extension === '.pdf') return <Icons.FileText className="text-red-400" size={48} strokeWidth={1} />;
   if (node.extension === '.txt') return <Icons.FileText className="text-slate-300" size={48} strokeWidth={1} />;
   if (node.extension === '.png' || node.extension === '.jpg' || node.extension === '.webp') return <Icons.Image className="text-purple-400" size={48} strokeWidth={1} />;
@@ -61,7 +74,7 @@ export default function FileGrid({ items, selectedIds, setSelectedIds, onDoubleC
             <div className="mb-2">
               {getIconForNode(node)}
             </div>
-            <div className="w-full truncate px-1 text-slate-200">
+            <div className="w-full truncate px-1 text-slate-200 text-xs" title={node.name}>
               {node.name}
             </div>
           </div>

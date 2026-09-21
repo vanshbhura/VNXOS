@@ -49,20 +49,23 @@ export function useBattery(): BatteryState {
       });
     };
 
+    const onLevelChange = () => battery && update(battery);
+    const onChargingChange = () => battery && update(battery);
+
     navigator.getBattery!().then((b) => {
       battery = b;
       update(b);
 
-      b.addEventListener('levelchange', () => update(b));
-      b.addEventListener('chargingchange', () => update(b));
+      b.addEventListener('levelchange', onLevelChange);
+      b.addEventListener('chargingchange', onChargingChange);
     }).catch(() => {
       setState(UNSUPPORTED);
     });
 
     return () => {
       if (battery) {
-        battery.removeEventListener('levelchange', () => {});
-        battery.removeEventListener('chargingchange', () => {});
+        battery.removeEventListener('levelchange', onLevelChange);
+        battery.removeEventListener('chargingchange', onChargingChange);
       }
     };
   }, []);

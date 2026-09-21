@@ -198,7 +198,7 @@ export default function Dock() {
     ...(position === 'bottom' ? { bottom: 0, left: 0, right: 0, height: 8 } :
        position === 'left' ? { left: 0, top: 0, bottom: 0, width: 8 } :
        { right: 0, top: 0, bottom: 0, width: 8 }),
-    zIndex: 39,
+    zIndex: 8499,
   } : {};
 
   return (
@@ -213,8 +213,9 @@ export default function Dock() {
       )}
 
       <div
-        className="fixed z-40"
+        className="fixed"
         style={{
+          zIndex: 8500,
           ...positionStyles,
           ...autoHideStyle,
         }}

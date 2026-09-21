@@ -39,6 +39,12 @@ export const powershellShell: ShellDefinition = {
           ['skills', 'Lists categorized technical skills'],
           ['github', 'Shows GitHub profile and repository links'],
           ['resume', 'Displays resume status and location'],
+          ['vnx', 'Displays VNX.OS identity banner'],
+          ['neofetch', 'Displays system hardware & software specs'],
+          ['coffee', 'Developer fuel'],
+          ['fortune', 'Displays random developer quote'],
+          ['matrix', 'Triggers digital rain animation'],
+          ['devmode', 'Toggles Developer Mode HUD overlay'],
           ['exit', 'Exits the current PowerShell session'],
         ];
 
@@ -87,6 +93,15 @@ export const powershellShell: ShellDefinition = {
     'skills': coreCommands.skills,
     'github': coreCommands.github,
     'resume': coreCommands.resume,
+    'neofetch': coreCommands.neofetch,
+    'uname': coreCommands.uname,
+    'fortune': coreCommands.fortune,
+    'coffee': coreCommands.coffee,
+    'vnx': coreCommands.vnx,
+    'matrix': coreCommands.matrix,
+    'sudo': coreCommands.sudo,
+    'devmode': coreCommands.devmode,
+    'developer': coreCommands.developer,
     'exit': coreCommands.exit,
   },
 };

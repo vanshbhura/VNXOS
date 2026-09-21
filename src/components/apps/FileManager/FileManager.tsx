@@ -155,7 +155,10 @@ export default function FileManager({ window: appWindow }: FileManagerProps) {
       'Terminal': 'terminal',
       'Command Prompt': 'cmd',
       'CMD': 'cmd',
-      'PowerShell': 'powershell'
+      'PowerShell': 'powershell',
+      'Snake': 'snake',
+      'Impossible Tic Tac Toe': 'tictactoe',
+      'Flappy Bird': 'flappy',
     };
 
     const targetAppId = appMap[node.name];

@@ -77,29 +77,42 @@ export const useOSStore = create<OSStore>()((set, get) => ({
     // Check local storage for persisted rect
     const persistedRect = getPersistedRect(app.id);
     
-    const w = initialRect?.width ?? persistedRect?.width ?? app.defaultSize.width;
-    const h = initialRect?.height ?? persistedRect?.height ?? app.defaultSize.height;
-    
+    const rawW = initialRect?.width ?? persistedRect?.width ?? app.defaultSize.width;
+    const rawH = initialRect?.height ?? persistedRect?.height ?? app.defaultSize.height;
+
+    // Viewport-aware dimension clamping:
+    // Minimum dimensions: 360x240
+    // Maximum dimensions: available viewport width minus margin, available height minus topbar (28px) and dock (92px)
+    const maxW = Math.max(360, viewW - 24);
+    const maxH = Math.max(240, viewH - 28 - 92);
+    const w = Math.min(rawW, maxW);
+    const h = Math.min(rawH, maxH);
+
     let x = initialRect?.x ?? persistedRect?.x;
     let y = initialRect?.y ?? persistedRect?.y;
 
     if (x === undefined || y === undefined) {
-      // Smart offset: find top-most window to offset from
-      const activeWindows = windows.filter(w => w.state !== 'minimized');
+      // Smart cascade offset: find top-most window to offset from
+      const activeWindows = windows.filter((win) => win.state !== 'minimized');
       if (activeWindows.length > 0) {
-        // Find highest z-index window
         const topWin = activeWindows.reduce((prev, curr) => (prev.zIndex > curr.zIndex ? prev : curr));
-        x = topWin.rect.x + 30;
-        y = topWin.rect.y + 30;
-        
-        // Prevent going off-screen
-        if (x + w > viewW) x = Math.max(80, (viewW - w) / 2);
-        if (y + h > viewH) y = Math.max(40, (viewH - h) / 2 - 30);
+        x = topWin.rect.x + 28;
+        y = topWin.rect.y + 28;
+
+        // If cascading pushes window past viewport boundaries, loop back or center
+        if (x + w > viewW - 16 || y + h > viewH - 88) {
+          x = Math.max(16, (viewW - w) / 2);
+          y = Math.max(34, (viewH - h - 92) / 2 + 28);
+        }
       } else {
-        x = Math.max(80, (viewW - w) / 2);
-        y = Math.max(40, (viewH - h) / 2 - 30);
+        x = Math.max(16, (viewW - w) / 2);
+        y = Math.max(34, (viewH - h - 92) / 2 + 28);
       }
     }
+
+    // Unconditional safety clamp: titlebar is ALWAYS accessible below topbar, window never clips under dock
+    x = Math.max(8, Math.min(x, Math.max(8, viewW - w - 8)));
+    y = Math.max(32, Math.min(y, Math.max(32, viewH - h - 70)));
 
     const title = initialPath
       ? (initialPath.split('/').filter(Boolean).pop() || app.name)

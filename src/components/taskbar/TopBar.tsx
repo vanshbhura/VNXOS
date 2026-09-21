@@ -13,11 +13,16 @@ import QuickSettingsPanel from './QuickSettingsPanel';
 import NotificationCenterPanel from './NotificationCenterPanel';
 import CalendarPanel from './CalendarPanel';
 import UserMenuPanel from './UserMenuPanel';
+import { useEasterEggStore } from '../../features/easter-eggs/easterEggStore';
 
 
 // Applications menu items
 const APP_MENU_ITEMS = [
   { label: 'Projects', appId: 'projects' },
+  { label: 'Games Hub', appId: 'games' },
+  { label: 'Snake', appId: 'snake' },
+  { label: 'Impossible Tic Tac Toe', appId: 'tictactoe' },
+  { label: 'Flappy Bird', appId: 'flappy' },
   { label: 'About Me', appId: 'about' },
   { label: 'File Manager', appId: 'file-manager' },
   { label: 'Terminal', appId: 'terminal' },
@@ -28,6 +33,7 @@ const APP_MENU_ITEMS = [
 const PLACES_MENU_ITEMS = [
   { label: 'Home Folder', appId: 'file-manager', path: '/home/vansh' },
   { label: 'Desktop', appId: 'file-manager', path: '/home/vansh/Desktop' },
+  { label: 'Games', appId: 'file-manager', path: '/home/vansh/Games' },
   { label: 'Documents', appId: 'file-manager', path: '/home/vansh/Documents' },
   { label: 'Projects', appId: 'file-manager', path: '/home/vansh/Projects' },
 ];
@@ -87,7 +93,7 @@ function TopMenuButton({
             borderRadius: 9,
             padding: 4,
             boxShadow: '0 12px 40px rgba(0,0,0,0.6)',
-            zIndex: 9000,
+            zIndex: 9500,
           }}
         >
           {items.map((item) => (
@@ -110,6 +116,25 @@ export default function TopBar() {
   const { timeStr, dateStr } = useTime();
   const battery = useBattery();
   const toggleLauncher = useOSStore((s) => s.toggleLauncher);
+  const logoClicksRef = useRef<{ count: number; lastTime: number }>({ count: 0, lastTime: 0 });
+
+  const handleLogoClick = () => {
+    const now = Date.now();
+    if (now - logoClicksRef.current.lastTime > 2500) {
+      logoClicksRef.current.count = 1;
+    } else {
+      logoClicksRef.current.count += 1;
+    }
+    logoClicksRef.current.lastTime = now;
+
+    if (logoClicksRef.current.count >= 5) {
+      logoClicksRef.current.count = 0;
+      useEasterEggStore.getState().openDevModal();
+      return;
+    }
+
+    toggleLauncher();
+  };
 
   const {
     simulatedWifi, simulatedVolume,
@@ -151,8 +176,9 @@ export default function TopBar() {
   return (
     <div ref={topbarRef}>
       <div
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4"
+        className="fixed top-0 left-0 right-0 flex items-center justify-between px-4"
         style={{
+          zIndex: 9000,
           height: '28px',
           background: 'var(--os-topbar-bg, rgba(8, 8, 16, 0.75))',
           backdropFilter: 'blur(20px)',
@@ -168,7 +194,7 @@ export default function TopBar() {
           <button
             className="topbar-btn font-semibold tracking-widest"
             style={{ color: '#a78bfa', fontSize: '12px', letterSpacing: '0.15em' }}
-            onClick={toggleLauncher}
+            onClick={handleLogoClick}
             aria-label="Open application launcher"
           >
             VNX.OS
@@ -223,28 +249,30 @@ export default function TopBar() {
             onClick={() => toggleOverlay('quick-settings')}
             title={battery.supported
               ? `Battery: ${batteryLevel ?? '…'}%${batteryCharging ? ' (charging)' : ''}`
-              : 'Battery status unavailable'}
+              : 'AC Power (Desktop Mode)'}
             aria-label={battery.supported
               ? `Battery: ${batteryLevel ?? '…'}%${batteryCharging ? ' (charging)' : ''}`
-              : 'Battery status unavailable'}
+              : 'AC Power (Desktop Mode)'}
           >
             <BatteryIcon />
-            <span style={{ fontSize: '11px', opacity: 0.7 }}>
-              {batteryLevel !== null ? batteryLevel + '%' : battery.supported ? '…' : '–'}
-            </span>
+            {battery.supported ? (
+              <span style={{ fontSize: '11px', opacity: 0.75, fontVariantNumeric: 'tabular-nums' }}>
+                {batteryLevel !== null ? `${batteryLevel}%` : '…'}
+              </span>
+            ) : null}
           </button>
 
           <div className="w-px h-3 mx-1" style={{ background: 'rgba(255,255,255,0.1)' }} />
 
           {/* Clock — opens Calendar */}
           <button
-            className="topbar-btn flex-col items-end gap-0"
+            className="topbar-btn flex items-center gap-1.5"
             style={{ padding: '0 8px' }}
             onClick={() => toggleOverlay('calendar')}
-            aria-label="Open calendar"
+            aria-label={`Open calendar, current date ${dateStr} ${timeStr}`}
           >
-            <span style={{ fontSize: '12px', fontWeight: 600, lineHeight: 1.2 }}>{timeStr}</span>
-            <span style={{ fontSize: '10px', opacity: 0.55, lineHeight: 1.2 }}>{dateStr}</span>
+            <span style={{ fontSize: '11px', opacity: 0.65, fontWeight: 400 }}>{dateStr}</span>
+            <span style={{ fontSize: '11.5px', fontWeight: 600, color: 'rgba(255,255,255,0.92)' }}>{timeStr}</span>
           </button>
 
           <div className="w-px h-3 mx-1" style={{ background: 'rgba(255,255,255,0.1)' }} />
