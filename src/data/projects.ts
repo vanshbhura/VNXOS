@@ -2,28 +2,56 @@ export interface Project {
   id: string;
   name: string;
   shortDescription: string;
-  detailedDescription: string;
+  detailedDescription?: string;
   technologies: string[];
   category: string;
   image?: string;
   githubUrl?: string;
+  repositoryUrl?: string;
   liveUrl?: string;
-  status: 'Completed' | 'In Development' | 'In Progress' | 'Planned';
+  status: 'LIVE' | 'DEVELOPMENT' | 'ARCHIVED' | 'Completed' | 'In Development' | 'In Progress' | 'Planned';
   featured: boolean;
+  deployed?: boolean;
+  isGitHub?: boolean;
+  primaryLanguage?: string;
+  topics?: string[];
+  lastUpdated?: string;
+  stars?: number;
+  forks?: number;
 }
 
-export const projectsData: Project[] = [
+export const curatedProjects: Project[] = [
   {
     id: 'vnx-os',
     name: 'VNX.OS',
     shortDescription: 'Interactive operating-system-style portfolio.',
-    detailedDescription: 'An interactive operating-system-style portfolio where visitors explore the portfolio through a simulated desktop environment with a window manager, virtual filesystem, and native applications.',
+    detailedDescription: 'An interactive operating-system-style portfolio where visitors explore engineering systems through a simulated desktop environment with a window manager, virtual filesystem, and native applications.',
     technologies: ['React', 'TypeScript', 'Vite', 'Tailwind CSS', 'Lucide React', 'Framer Motion'],
     category: 'Web OS / Portfolio',
     image: '/assets/projects/vnxos.png',
     githubUrl: 'https://github.com/vanshbhura/VNXOS',
-    status: 'In Development',
+    repositoryUrl: 'https://github.com/vanshbhura/VNXOS',
+    liveUrl: 'https://vanshbhura.antideploy.com/',
+    status: 'LIVE',
     featured: true,
+    deployed: true,
+    primaryLanguage: 'TypeScript',
+  },
+  {
+    id: 'wealthhub',
+    name: 'WealthHub',
+    shortDescription: 'Financial intelligence and wealth management platform.',
+    detailedDescription: 'An advanced platform providing financial management, investment tracking, and portfolio intelligence.',
+    technologies: ['Python'],
+    category: 'FinTech / AI',
+    image: '/assets/projects/wealthhub.png',
+    githubUrl: 'https://github.com/vanshbhura/WealthHub',
+    repositoryUrl: 'https://github.com/vanshbhura/WealthHub',
+    liveUrl: 'https://wealthhub.antideploy.com/',
+    status: 'LIVE',
+    featured: true,
+    deployed: true,
+    primaryLanguage: 'Python',
   },
   {
     id: 'enterprise-ai-knowledge-hub',
@@ -33,8 +61,12 @@ export const projectsData: Project[] = [
     technologies: ['Python', 'Streamlit', 'LangChain', 'Google Gemini', 'ChromaDB', 'Hugging Face Embeddings', 'RAG'],
     category: 'Artificial Intelligence',
     image: '/assets/projects/enterprise-ai-knowledge-hub.png',
-    status: 'In Progress',
+    githubUrl: 'https://github.com/vanshbhura/Enterprise-AI-Knowledge-Hub-RAG',
+    repositoryUrl: 'https://github.com/vanshbhura/Enterprise-AI-Knowledge-Hub-RAG',
+    status: 'DEVELOPMENT',
     featured: true,
+    deployed: false,
+    primaryLanguage: 'Python',
   },
   {
     id: 'crypto-agent',
@@ -44,8 +76,10 @@ export const projectsData: Project[] = [
     technologies: ['Python', 'FastAPI', 'MongoDB', 'Redis', 'Docker', 'CCXT'],
     category: 'AI / Data Engineering',
     image: '/assets/projects/crypto-agent.png',
-    status: 'In Progress',
+    status: 'DEVELOPMENT',
     featured: false,
+    deployed: false,
+    primaryLanguage: 'Python',
   },
   {
     id: 'play2pro',
@@ -55,8 +89,10 @@ export const projectsData: Project[] = [
     technologies: ['Flutter', 'FastAPI', 'PostgreSQL', 'AWS', 'OpenCV'],
     category: 'Mobile & Backend',
     image: '/assets/projects/play2pro.png',
-    status: 'In Progress',
+    status: 'DEVELOPMENT',
     featured: false,
+    deployed: false,
+    primaryLanguage: 'Flutter',
   },
   {
     id: 'return-by-death',
@@ -66,7 +102,11 @@ export const projectsData: Project[] = [
     technologies: ['Roblox Studio', 'Lua/Luau'],
     category: 'Game Development',
     image: '/assets/projects/return-by-death.png',
-    status: 'In Progress',
+    status: 'DEVELOPMENT',
     featured: false,
+    deployed: false,
+    primaryLanguage: 'Lua',
   }
 ];
+
+export const projectsData: Project[] = curatedProjects;
